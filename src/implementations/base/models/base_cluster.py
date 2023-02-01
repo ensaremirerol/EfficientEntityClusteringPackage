@@ -1,0 +1,149 @@
+from src.interfaces.interface_cluster.i_cluster import ICluster
+from src.implementations.base.models.base_entity import BaseEntity
+from src.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
+from exceptions.general.exceptions import *
+
+import numpy as np
+
+
+class BaseCluster(ICluster):
+
+    def __init__(self, cluster_id: str,
+                 cluster_name: str,
+                 entities: list[BaseEntity],
+                 cluster_vector: np.ndarray = np.array([])):
+        super().__init__(cluster_id, cluster_name)
+        self.cluster_name = cluster_name
+        self.entities: list[BaseEntity] = entities
+        self.cluster_vector: np.ndarray = cluster_vector
+
+    def get_entities(self) -> list[BaseEntity]:
+        '''Returns the entities of the cluster.'''
+        return self.entities
+
+    def get_entity_by_id(self, entity_id: str) -> BaseEntity:
+        '''Returns the entity with the given entity id.'''
+        for entity in self.entities:
+            if entity.get_entity_id() == entity_id:
+                return entity
+        raise NotFoundException(
+            f"Entity with id {entity_id} not found in cluster {self.cluster_id}-{self.cluster_name}")
+
+    def get_entity_by_mention(
+            self, mention: str) -> BaseEntity:
+        '''Returns the entity with the given mention.'''
+        for entity in self.entities:
+            if entity.get_mention() == mention:
+                return entity
+        raise NotFoundException(
+            f"Entity with mention {mention} not found in cluster {self.cluster_id}-{self.cluster_name}")
+
+    def get_entity_by_source_id(
+            self, source: str, source_id: str) -> BaseEntity:
+        '''Returns the entity with the given source and source id.'''
+        for entity in self.entities:
+            if entity.get_entity_source() == source and entity.get_entity_source_id() == source_id:
+                return entity
+        raise NotFoundException(
+            f"Entity with source {source} and source_id {source_id} not found in cluster {self.cluster_id}-{self.cluster_name}")
+
+    def get_entities_by_source(
+            self, source: str) -> list[BaseEntity]:
+        '''Returns the entities with the given source.'''
+        entities = []
+        for entity in self.entities:
+            if entity.get_entity_source() == source:
+                entities.append(entity)
+        return entities
+
+    def is_in_cluster(self, entity_id: str = None,
+                      entity_source: str = None,
+                      entity_source_id: str = None,
+                      entity: BaseEntity = None) -> bool:
+        '''
+        Returns True if the entity is in the cluster, False otherwise.
+        You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
+        '''
+        try:
+            if entity is not None:
+                return entity in self.entities
+
+            if entity_id is not None:
+                return self.get_entity_by_id(entity_id) is not None
+
+            if entity_source is not None and entity_source_id is not None:
+                return self.get_entity_by_source_id(entity_source, entity_source_id) is not None
+
+        except NotFoundException:
+            return False
+
+        if (entity_source is None and entity_source_id is not None) or (entity_source is not None and entity_source_id is None):
+            raise ArgumentException("You must provide both entity_source and entity_source_id")
+
+        raise ArgumentException(
+            "You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id")
+
+    def add_entity(self, entity: BaseEntity):
+        '''Adds the given entity to the cluster.'''
+        if self.is_in_cluster(entity=entity):
+            raise AlreadyExistsException(
+                f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is already in the cluster {self.cluster_id}-{self.cluster_name}")
+        if entity.in_cluster:
+            raise AlreadyInClusterException(
+                f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is in cluster {entity.get_cluster_id()}-{entity.get_cluster_name()}")
+        self.entities.append(entity)
+
+    def remove_entity(
+            self, entity_id: str = None, entity_source: str = None, entity_source_id: str = None,
+            entity: BaseEntity = None):
+        '''
+        Removes the given entity from the cluster.
+        You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
+        '''
+        if entity is not None:
+            self.entities.remove(entity)
+            return
+
+        if entity_id is not None:
+            self.entities.remove(self.get_entity_by_id(entity_id))
+            return
+
+        if entity_source is not None and entity_source_id is not None:
+            self.entities.remove(
+                self.get_entity_by_source_id(entity_source, entity_source_id))
+            return
+
+        elif (entity_source is None and entity_source_id is not None) or (entity_source is not None and entity_source_id is None):
+            raise ArgumentException("You must provide both entity_source and entity_source_id")
+
+        raise ArgumentException(
+            "You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id")
+
+    def calculate_cluster_vector(self, ):
+        '''Calculates the cluster vector based on the entities in the cluster.'''
+        self.cluster_vector = np.mean(
+            [entity.get_entity_vector() for entity in self.entities], axis=0)
+
+    def to_dict(self) -> dict:
+        '''Returns a dict representation of the cluster.'''
+        return {
+            "cluster_id": self.cluster_id,
+            "cluster_name": self.cluster_name,
+            "entities": [entity.entity_id for entity in self.entities],
+            "cluster_vector": self.cluster_vector.tolist()
+        }
+
+    @staticmethod
+    def from_dict(cluster_dict: dict, entity_repository: IEntityRepository) -> ICluster:
+        '''Returns a cluster from a dict representation.'''
+        return BaseCluster(cluster_dict["cluster_id"],
+                           cluster_dict["cluster_name"],
+                           [entity_repository.get_entity_by_id(entity_id)
+                            for entity_id in cluster_dict["entities"]],
+                           np.array(cluster_dict["cluster_vector"]))
+
+    def __str__(self):
+        return f"Cluster {self.cluster_id}-{self.cluster_name}"
+
+    def __repr__(self):
+        return self.__str__()
