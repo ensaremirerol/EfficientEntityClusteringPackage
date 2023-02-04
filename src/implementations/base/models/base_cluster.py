@@ -1,7 +1,7 @@
 from src.interfaces.interface_cluster.i_cluster import ICluster
 from src.implementations.base.models.base_entity import BaseEntity
 from src.implementations.base.repositories.base_entity_repository import BaseEntityRepository
-from exceptions.general.exceptions import *
+from src.exceptions.general.exceptions import *
 
 import numpy as np
 from typing import Optional
@@ -96,23 +96,25 @@ class BaseCluster(ICluster):
 
     def remove_entity(
             self, entity_id: Optional[str] = None, entity_source: Optional[str] = None,
-            entity_source_id: Optional[str] = None, entity: Optional[BaseEntity] = None):
+            entity_source_id: Optional[str] = None, entity: Optional[BaseEntity] = None) -> BaseEntity:
         '''
         Removes the given entity from the cluster.
         You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
         '''
         if entity is not None:
             self.entities.remove(entity)
-            return
+            return entity
 
         if entity_id is not None:
+            entity = self.get_entity_by_id(entity_id)
             self.entities.remove(self.get_entity_by_id(entity_id))
-            return
+            return entity
 
         if entity_source is not None and entity_source_id is not None:
+            entity = self.get_entity_by_source_id(entity_source, entity_source_id)
             self.entities.remove(
-                self.get_entity_by_source_id(entity_source, entity_source_id))
-            return
+                entity)
+            return entity
 
         elif (entity_source is None and entity_source_id is not None) or (entity_source is not None and entity_source_id is None):
             raise ArgumentException("You must provide both entity_source and entity_source_id")

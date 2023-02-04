@@ -39,7 +39,7 @@ class BaseEntityRepository(IEntityRepository):
         raise NotFoundException(f"Entity with source {source} and source_id {source_id} not found")
 
     def get_all_entities(self) -> list[BaseEntity]:
-        return self.entities
+        return [entity for entity in self.entities]
 
     def update_entity(self, entity: BaseEntity):
         for i in range(len(self.entities)):
@@ -72,8 +72,8 @@ class BaseEntityRepository(IEntityRepository):
             self.delete_entity(entity_id)
 
     def is_in_repository(
-            self, entity_id: Optional[str] = None, entity: Optional[BaseEntity] = None, entity_source: Optional[str] = None,
-            entity_source_id: Optional[str] = None) -> bool:
+            self, entity_id: Optional[str] = None, entity: Optional[BaseEntity] = None,
+            entity_source: Optional[str] = None, entity_source_id: Optional[str] = None) -> bool:
         try:
             if entity is not None:
                 return entity in self.entities

@@ -29,6 +29,19 @@ class IEntity(abc.ABC):
         '''Returns the id of the entity in the main entity source(which datasource) of the entity.'''
         return self.entity_source_id
 
+    def get_in_cluster(self) -> bool:
+        '''Returns True if the entity is in a cluster, False otherwise.'''
+        return self.in_cluster
+
+    def get_cluster_id(self) -> Optional[str]:
+        '''Returns the cluster id of the entity.'''
+        return self.cluster_id
+
+    @abc.abstractmethod
+    def set_cluster_id(self, cluster_id: str):
+        '''Sets the cluster id of the entity.'''
+        pass
+
     def __eq__(self, other):
         if isinstance(other, IEntity):
             return self.mention == other.mention and self.entity_id == other.entity_id and self.entity_source == other.entity_source and self.entity_source_id == other.entity_source_id

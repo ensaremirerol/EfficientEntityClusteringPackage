@@ -1,7 +1,10 @@
 from src.interfaces.interface_cluster.i_cluster import ICluster
 from src.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
+from src.interfaces.interface_entity.i_entity import IEntity
+
 
 import abc
+from typing import Optional
 
 
 class IClusterRepository(abc.ABC):
@@ -44,11 +47,18 @@ class IClusterRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def remove_entity_from_cluster(self, entity_id: str):
+    def remove_entity_from_cluster(self, cluster_id: Optional[str], entity_id: str) -> IEntity:
         '''Removes the entity with the given entity id from its cluster.'''
         pass
 
     @abc.abstractmethod
-    def remove_entities_from_clusters(self, entity_ids: list[str]):
+    def remove_entities_from_clusters(
+            self, cluster_id: Optional[str],
+            entity_ids: list[str]) -> list[IEntity]:
         '''Removes the entities with the given entity ids from their clusters.'''
+        pass
+
+    @abc.abstractmethod
+    def add_entity_to_cluster(self, cluster_id: str, entity_id: str):
+        '''Adds the entity with the given entity id to the cluster with the given cluster id.'''
         pass

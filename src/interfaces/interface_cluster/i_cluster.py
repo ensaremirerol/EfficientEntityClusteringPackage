@@ -1,5 +1,5 @@
 from src.interfaces.interface_entity.i_entity import IEntity
-from exceptions.general.exceptions import *
+from src.exceptions.general.exceptions import *
 
 import abc
 from typing import Optional
@@ -66,7 +66,7 @@ class ICluster(abc.ABC):
     @abc.abstractmethod
     def remove_entity(
             self, entity_id: Optional[str] = None, entity_source: Optional[str] = None,
-            entity_source_id: Optional[str] = None, entity: Optional[IEntity] = None):
+            entity_source_id: Optional[str] = None, entity: Optional[IEntity] = None) -> IEntity:
         '''
         Removes the given entity from the cluster.
         You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
