@@ -1,12 +1,13 @@
 from src.interfaces.interface_entity.i_entity import IEntity
 
 import numpy as np
+from typing import Callable, Optional
 
 
 class BaseEntity(IEntity):
     def __init__(
             self, mention: str, entity_id: str, entity_source: str, entity_source_id: str,
-            in_cluster: bool = False, cluster_id: str = None, has_mention_vector: bool = False,
+            in_cluster: bool = False, cluster_id: Optional[str] = None, has_mention_vector: bool = False,
             mention_vector: np.ndarray = np.array([])):
         super().__init__(mention, entity_id, entity_source, entity_source_id, in_cluster, cluster_id)
         self.mention_vector: np.ndarray = mention_vector
@@ -15,7 +16,7 @@ class BaseEntity(IEntity):
     def get_mention_vector(self) -> np.ndarray:
         return self.mention_vector
 
-    def distance_to(self, other: IEntity, distance_function: function) -> float:
+    def distance_to(self, other, distance_function: Callable[[np.ndarray, np.ndarray], float]) -> float:
         return distance_function(self.get_mention_vector(), other.get_mention_vector())
 
     def to_dict(self) -> dict:

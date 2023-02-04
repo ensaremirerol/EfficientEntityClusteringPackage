@@ -4,6 +4,7 @@ from src.exceptions.general.exceptions import *
 
 import gensim
 import numpy as np
+from typing import Optional
 
 
 class BaseEntityRepository(IEntityRepository):
@@ -18,7 +19,7 @@ class BaseEntityRepository(IEntityRepository):
 
     def get_entity_by_id(self, entity_id: str) -> BaseEntity:
         for entity in self.entities:
-            if entity.id == entity_id:
+            if entity.entity_id == entity_id:
                 return entity
         raise NotFoundException(f"Entity with id {entity_id} not found")
 
@@ -29,11 +30,11 @@ class BaseEntityRepository(IEntityRepository):
         raise NotFoundException(f"Entity with mention {mention} not found")
 
     def get_entities_by_source(self, source: str) -> list[BaseEntity]:
-        return [entity for entity in self.entities if entity.source == source]
+        return [entity for entity in self.entities if entity.entity_source == source]
 
     def get_entity_by_source_id(self, source: str, source_id: str) -> BaseEntity:
         for entity in self.entities:
-            if entity.source == source and entity.source_id == source_id:
+            if entity.entity_source == source and entity.entity_source_id == source_id:
                 return entity
         raise NotFoundException(f"Entity with source {source} and source_id {source_id} not found")
 
@@ -42,26 +43,26 @@ class BaseEntityRepository(IEntityRepository):
 
     def update_entity(self, entity: BaseEntity):
         for i in range(len(self.entities)):
-            if self.entities[i].id == entity.id:
+            if self.entities[i].entity_id == entity.entity_id:
                 self.entities[i] = entity
                 self.calculate_entity_vector(entity)
                 return
-        raise NotFoundException(f"Entity with id {entity.id} not found")
+        raise NotFoundException(f"Entity with id {entity.entity_id} not found")
 
     def add_entities(self, entities: list[BaseEntity]):
         for entity in entities:
             if self.is_in_repository(
-                    entity_source=entity.source, entity_source_id=entity.source_id):
-                print(f"Entity with id {entity.id} already exists! Skipping...")
+                    entity_source=entity.entity_source, entity_source_id=entity.entity_source_id):
+                print(f"Entity with id {entity.entity_id} already exists! Skipping...")
                 continue
             self.calculate_entity_vector(entity)
             self.last_id += 1
-            entity.id = str(self.last_id)
+            entity.entity_id = str(self.last_id)
             self.entities.append(entity)
 
     def delete_entity(self, entity_id: str):
         for i in range(len(self.entities)):
-            if self.entities[i].id == entity_id:
+            if self.entities[i].entity_id == entity_id:
                 del self.entities[i]
                 return
         raise NotFoundException(f"Entity with id {entity_id} not found")
@@ -71,15 +72,15 @@ class BaseEntityRepository(IEntityRepository):
             self.delete_entity(entity_id)
 
     def is_in_repository(
-            self, entity_id: str = None, entity: BaseEntity = None, entity_source: str = None,
-            entity_source_id: str = None) -> bool:
+            self, entity_id: Optional[str] = None, entity: Optional[BaseEntity] = None, entity_source: Optional[str] = None,
+            entity_source_id: Optional[str] = None) -> bool:
         try:
             if entity is not None:
                 return entity in self.entities
             if entity_id is not None:
                 return self.get_entity_by_id(entity_id) is not None
             if entity_source is not None and entity_source_id is not None:
-                return self.get_entity_by_source_and_source_id(
+                return self.get_entity_by_source_id(
                     entity_source, entity_source_id) is not None
         except NotFoundException:
             return False

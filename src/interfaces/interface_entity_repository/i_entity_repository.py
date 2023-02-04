@@ -1,5 +1,6 @@
 from src.interfaces.interface_entity.i_entity import IEntity
 
+from typing import Optional
 import abc
 
 
@@ -12,11 +13,6 @@ class IEntityRepository(abc.ABC):
     @abc.abstractmethod
     def get_entity_by_mention(self, mention: str) -> IEntity:
         '''Returns the entity with the given mention.'''
-        pass
-
-    @abc.abstractmethod
-    def get_entity_by_source_id(self, source: str, source_id: str) -> IEntity:
-        '''Returns the entity with the given source and source id.'''
         pass
 
     @abc.abstractmethod
@@ -56,8 +52,8 @@ class IEntityRepository(abc.ABC):
 
     @abc.abstractmethod
     def is_in_repository(
-            self, entity_id: str = None, entity: IEntity = None, entity_source: str = None,
-            entity_source_id: str = None) -> bool:
+            self, entity_id: Optional[str] = None, entity: Optional[IEntity] = None,
+            entity_source: Optional[str] = None, entity_source_id: Optional[str] = None) -> bool:
         '''
         Returns whether the given entity is in the repository.
         You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id

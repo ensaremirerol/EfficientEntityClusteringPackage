@@ -1,9 +1,10 @@
 from src.interfaces.interface_cluster.i_cluster import ICluster
 from src.implementations.base.models.base_entity import BaseEntity
-from src.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
+from src.implementations.base.repositories.base_entity_repository import BaseEntityRepository
 from exceptions.general.exceptions import *
 
 import numpy as np
+from typing import Optional
 
 
 class BaseCluster(ICluster):
@@ -56,10 +57,10 @@ class BaseCluster(ICluster):
                 entities.append(entity)
         return entities
 
-    def is_in_cluster(self, entity_id: str = None,
-                      entity_source: str = None,
-                      entity_source_id: str = None,
-                      entity: BaseEntity = None) -> bool:
+    def is_in_cluster(self, entity_id: Optional[str] = None,
+                      entity_source: Optional[str] = None,
+                      entity_source_id: Optional[str] = None,
+                      entity: Optional[BaseEntity] = None) -> bool:
         '''
         Returns True if the entity is in the cluster, False otherwise.
         You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
@@ -90,12 +91,12 @@ class BaseCluster(ICluster):
                 f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is already in the cluster {self.cluster_id}-{self.cluster_name}")
         if entity.in_cluster:
             raise AlreadyInClusterException(
-                f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is in cluster {entity.get_cluster_id()}-{entity.get_cluster_name()}")
+                f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is in cluster with id {entity.cluster_id}")
         self.entities.append(entity)
 
     def remove_entity(
-            self, entity_id: str = None, entity_source: str = None, entity_source_id: str = None,
-            entity: BaseEntity = None):
+            self, entity_id: Optional[str] = None, entity_source: Optional[str] = None,
+            entity_source_id: Optional[str] = None, entity: Optional[BaseEntity] = None):
         '''
         Removes the given entity from the cluster.
         You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
@@ -122,7 +123,7 @@ class BaseCluster(ICluster):
     def calculate_cluster_vector(self, ):
         '''Calculates the cluster vector based on the entities in the cluster.'''
         self.cluster_vector = np.mean(
-            [entity.get_entity_vector() for entity in self.entities], axis=0)
+            [entity.get_mention_vector() for entity in self.entities], axis=0)
 
     def to_dict(self) -> dict:
         '''Returns a dict representation of the cluster.'''
@@ -134,7 +135,7 @@ class BaseCluster(ICluster):
         }
 
     @staticmethod
-    def from_dict(cluster_dict: dict, entity_repository: IEntityRepository) -> ICluster:
+    def from_dict(cluster_dict: dict, entity_repository: BaseEntityRepository) -> ICluster:
         '''Returns a cluster from a dict representation.'''
         return BaseCluster(cluster_dict["cluster_id"],
                            cluster_dict["cluster_name"],

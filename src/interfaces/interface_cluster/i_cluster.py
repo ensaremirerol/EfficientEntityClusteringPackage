@@ -2,6 +2,7 @@ from src.interfaces.interface_entity.i_entity import IEntity
 from exceptions.general.exceptions import *
 
 import abc
+from typing import Optional
 
 
 class ICluster(abc.ABC):
@@ -47,10 +48,10 @@ class ICluster(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def is_in_cluster(self, entity_id: str = None,
-                      entity_source: str = None,
-                      entity_source_id: str = None,
-                      entity: IEntity = None) -> bool:
+    def is_in_cluster(self, entity_id: Optional[str] = None,
+                      entity_source: Optional[str] = None,
+                      entity_source_id: Optional[str] = None,
+                      entity: Optional[IEntity] = None) -> bool:
         '''
         Returns True if the entity is in the cluster, False otherwise.
         You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
@@ -64,8 +65,8 @@ class ICluster(abc.ABC):
 
     @abc.abstractmethod
     def remove_entity(
-            self, entity_id: str = None, entity_source: str = None, entity_source_id: str = None,
-            entity: IEntity = None):
+            self, entity_id: Optional[str] = None, entity_source: Optional[str] = None,
+            entity_source_id: Optional[str] = None, entity: Optional[IEntity] = None):
         '''
         Removes the given entity from the cluster.
         You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
@@ -74,14 +75,14 @@ class ICluster(abc.ABC):
 
     def __eq__(self, other):
         if isinstance(other, ICluster):
-            return self.cluster_id == other.cluster_id and self.entities == other.entities
+            return self.cluster_id == other.cluster_id
         return False
 
     def __hash__(self):
-        return hash((self.cluster_id, self.entities))
+        return hash((self.cluster_id))
 
     def __str__(self):
-        return self.cluster_id + " " + self.cluster_name + " " + str(self.entities)
+        return self.cluster_id + " " + self.cluster_name
 
     def __repr__(self):
         return self.__str__()

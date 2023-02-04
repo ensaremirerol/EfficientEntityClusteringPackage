@@ -1,10 +1,11 @@
 import abc
+from typing import Optional
 
 
 class IEntity(abc.ABC):
     def __init__(
             self, mention: str, entity_id: str, entity_source: str, entity_source_id: str,
-            in_cluster: bool = False, cluster_id: str = None):
+            in_cluster: bool = False, cluster_id: Optional[str] = None):
         self.mention = mention
         self.entity_id = entity_id
         self.entity_source = entity_source

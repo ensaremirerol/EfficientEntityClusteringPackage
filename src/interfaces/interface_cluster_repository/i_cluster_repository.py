@@ -1,6 +1,5 @@
 from src.interfaces.interface_cluster.i_cluster import ICluster
 from src.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
-from src.interfaces.interface_entity.i_entity import IEntity
 
 import abc
 
