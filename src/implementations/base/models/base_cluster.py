@@ -17,6 +17,8 @@ class BaseCluster(ICluster):
         self.cluster_name = cluster_name
         self.entities: list[BaseEntity] = entities
         self.cluster_vector: np.ndarray = cluster_vector
+        if self.cluster_vector.size == 0:
+            self.calculate_cluster_vector()
 
     def get_entities(self) -> list[BaseEntity]:
         '''Returns the entities of the cluster.'''
@@ -93,6 +95,7 @@ class BaseCluster(ICluster):
             raise AlreadyInClusterException(
                 f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is in cluster with id {entity.cluster_id}")
         self.entities.append(entity)
+        self.calculate_cluster_vector()
 
     def remove_entity(
             self, entity_id: Optional[str] = None, entity_source: Optional[str] = None,
@@ -103,17 +106,20 @@ class BaseCluster(ICluster):
         '''
         if entity is not None:
             self.entities.remove(entity)
+            self.calculate_cluster_vector()
             return entity
 
         if entity_id is not None:
             entity = self.get_entity_by_id(entity_id)
             self.entities.remove(self.get_entity_by_id(entity_id))
+            self.calculate_cluster_vector()
             return entity
 
         if entity_source is not None and entity_source_id is not None:
             entity = self.get_entity_by_source_id(entity_source, entity_source_id)
             self.entities.remove(
                 entity)
+            self.calculate_cluster_vector()
             return entity
 
         elif (entity_source is None and entity_source_id is not None) or (entity_source is not None and entity_source_id is None):
