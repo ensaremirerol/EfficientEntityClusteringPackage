@@ -5,13 +5,13 @@ from src.interfaces.interface_cluster_repository.i_cluster_repository import ICl
 from src.exceptions.general.exceptions import *
 
 import numpy as np
-from typing import Optional, Callable
+from typing import Optional, Callable, cast
 
 
 class BaseClusterRepository(IClusterRepository):
-    def __init__(self, entity_repository: BaseEntityRepository, last_cluster_id: int):
+    def __init__(self, entity_repository: BaseEntityRepository, clusters: list[BaseCluster] = [], last_cluster_id: int = 0):
         self.entity_repository = entity_repository
-        self.clusters: list[BaseCluster] = []
+        self.clusters: list[BaseCluster] = clusters
         self.last_cluster_id = last_cluster_id
 
     def get_cluster_by_id(self, cluster_id: str) -> BaseCluster:
@@ -68,7 +68,24 @@ class BaseClusterRepository(IClusterRepository):
 
         raise NotFoundException('Entity with id {entity_id} not found in cluster/s.')
 
-    def remove_entities_from_cluster(
+    def remove_entities_from_clusters(
             self, cluster_id: Optional[str],
             entity_ids: list[str]) -> list[BaseEntity]:
         return [self.remove_entity_from_cluster(cluster_id, entity_id) for entity_id in entity_ids]
+
+    def add_entity_to_cluster(self, cluster_id: str, entity_id: str):
+        cluster = self.get_cluster_by_id(cluster_id)
+        entity = self.entity_repository.get_entity_by_id(entity_id)
+        cluster.add_entity(entity)
+
+    def to_dict(self) -> dict:
+        return {
+            'clusters': [cluster.to_dict() for cluster in self.clusters],
+            'last_cluster_id': self.last_cluster_id
+        }
+
+    @staticmethod
+    def from_dict(cluster_repository_dict: dict, entity_repository: BaseEntityRepository) -> IClusterRepository:
+        clusters = [cast(BaseCluster, BaseCluster.from_dict(cluster_dict, entity_repository=entity_repository)) for cluster_dict in cluster_repository_dict['clusters']]
+        return BaseClusterRepository(entity_repository, clusters, cluster_repository_dict['last_cluster_id'])
+        

@@ -2,9 +2,11 @@ import unittest
 
 from src.implementations.base.models.base_cluster import BaseEntity
 from src.implementations.base.models.base_cluster import BaseCluster
+from src.implementations.base.repositories.base_entity_repository import BaseEntityRepository
 from src.exceptions.general.exceptions import *
 
 import numpy as np
+import gensim
 
 from typing import cast
 
@@ -94,5 +96,26 @@ class TestBaseCluster(unittest.TestCase):
         self.assertEqual(cluster_dict['cluster_vector'], self.cluster.cluster_vector.tolist())
         self.assertEqual(cluster_dict['entities'], [entity.entity_id for entity in self.entities])
 
-    def test_from_dict(self) -> None:  # TODO: BaseEntityRepository
-        pass
+    def test_from_dict(self) -> None:
+        keyed_vectors = gensim.models.KeyedVectors(10)
+        keyed_vectors.add_vectors(
+            [entity.mention for entity in self.entities],
+            [np.random.rand(10) for _ in range(10)]
+        )
+        entity_repository = BaseEntityRepository(
+            entities=self.entities,
+            keyed_vectors=keyed_vectors,
+            last_id=11
+        )
+
+        cluster_dict = self.cluster.to_dict()
+
+        cluster: BaseCluster = cast(BaseCluster, BaseCluster.from_dict(
+            cluster_dict=cluster_dict,
+            entity_repository=entity_repository
+        ))
+
+        self.assertEqual(cluster.cluster_id, '1')
+        self.assertEqual(cluster.cluster_name, 'cluster')
+        self.assertEqual(cluster.cluster_vector.tolist(), self.cluster.cluster_vector.tolist())
+        self.assertEqual(cluster.get_entities(), self.entities)

@@ -4,7 +4,7 @@ from src.exceptions.general.exceptions import *
 
 import gensim
 import numpy as np
-from typing import Optional
+from typing import Optional, cast
 
 
 class BaseEntityRepository(IEntityRepository):
@@ -129,3 +129,18 @@ class BaseEntityRepository(IEntityRepository):
     def calculate_all_entity_vectors(self):
         for entity in self.entities:
             self.calculate_entity_vector(entity)
+
+    def to_dict(self) -> dict:
+        return {
+            "entities": [entity.to_dict() for entity in self.entities],
+            "last_id": self.last_id
+        }
+
+    @staticmethod
+    def from_dict(
+            data: dict, keyed_vectors: gensim.models.keyedvectors.KeyedVectors) -> IEntityRepository:
+        entities = [cast(BaseEntity, BaseEntity.from_dict(entity_data))
+                    for entity_data in data["entities"]]
+        return BaseEntityRepository(
+            entities=entities, last_id=data["last_id"],
+            keyed_vectors=keyed_vectors)
