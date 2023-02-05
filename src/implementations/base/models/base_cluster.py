@@ -156,3 +156,9 @@ class BaseCluster(ICluster):
 
     def __repr__(self):
         return self.__str__()
+
+    def __eq__(self, other):
+        return self.cluster_id == other.cluster_id
+
+    def __hash__(self):
+        return hash(self.cluster_id)

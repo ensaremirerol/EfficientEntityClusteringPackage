@@ -9,7 +9,9 @@ from typing import Optional, Callable, cast
 
 
 class BaseClusterRepository(IClusterRepository):
-    def __init__(self, entity_repository: BaseEntityRepository, clusters: list[BaseCluster] = [], last_cluster_id: int = 0):
+    def __init__(
+            self, entity_repository: BaseEntityRepository, clusters: list[BaseCluster] = [],
+            last_cluster_id: int = 0):
         self.entity_repository = entity_repository
         self.clusters: list[BaseCluster] = clusters
         self.last_cluster_id = last_cluster_id
@@ -58,12 +60,12 @@ class BaseClusterRepository(IClusterRepository):
         if cluster_id is not None:
             cluster = self.get_cluster_by_id(cluster_id)
             entity = cluster.remove_entity(entity_id)
-            return entity
         for cluster in self.clusters:
             if cluster.is_in_cluster(entity_id=entity_id):
                 entity = cluster.remove_entity(entity_id)
 
         if entity is not None:
+            entity.set_cluster_id(None)
             return entity
 
         raise NotFoundException('Entity with id {entity_id} not found in cluster/s.')
@@ -77,6 +79,7 @@ class BaseClusterRepository(IClusterRepository):
         cluster = self.get_cluster_by_id(cluster_id)
         entity = self.entity_repository.get_entity_by_id(entity_id)
         cluster.add_entity(entity)
+        entity.set_cluster_id(cluster_id)
 
     def to_dict(self) -> dict:
         return {
@@ -86,6 +89,10 @@ class BaseClusterRepository(IClusterRepository):
 
     @staticmethod
     def from_dict(cluster_repository_dict: dict, entity_repository: BaseEntityRepository) -> IClusterRepository:
-        clusters = [cast(BaseCluster, BaseCluster.from_dict(cluster_dict, entity_repository=entity_repository)) for cluster_dict in cluster_repository_dict['clusters']]
-        return BaseClusterRepository(entity_repository, clusters, cluster_repository_dict['last_cluster_id'])
-        
+        clusters = [
+            cast(
+                BaseCluster, BaseCluster.from_dict(
+                    cluster_dict, entity_repository=entity_repository))
+            for cluster_dict in cluster_repository_dict['clusters']]
+        return BaseClusterRepository(entity_repository, clusters,
+                                     cluster_repository_dict['last_cluster_id'])
