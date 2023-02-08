@@ -7,6 +7,6 @@ setup(
     author='Ensar Emir EROL',
     author_email='ensaremir.erol99@gmail.com',
     packages=find_packages(),
-    install_requires=[],
+    install_requires=['numpy', 'gensim'],
     python_requires='>=3.10',
 )
