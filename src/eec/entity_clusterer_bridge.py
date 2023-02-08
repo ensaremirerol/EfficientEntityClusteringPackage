@@ -1,4 +1,4 @@
-from src.implementations.base import *
+from src.eec.implementations.base import *
 
 
 class EntityClustererBridge:

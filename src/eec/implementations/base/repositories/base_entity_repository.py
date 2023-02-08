@@ -1,6 +1,6 @@
-from src.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
-from src.implementations.base.models.base_entity import BaseEntity
-from src.exceptions.general.exceptions import *
+from src.eec.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
+from src.eec.implementations.base.models.base_entity import BaseEntity
+from src.eec.exceptions.general.exceptions import *
 
 import gensim
 import numpy as np

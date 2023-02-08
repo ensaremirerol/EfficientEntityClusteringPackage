@@ -1,4 +1,4 @@
-from src.interfaces.interface_entity.i_entity import IEntity
+from src.eec.interfaces.interface_entity.i_entity import IEntity
 
 from typing import Optional
 import abc

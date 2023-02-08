@@ -1,6 +1,6 @@
 import unittest
 
-from src.implementations.base.models.base_cluster import BaseEntity
+from src.eec.implementations.base.models.base_cluster import BaseEntity
 
 import numpy as np
 from typing import cast

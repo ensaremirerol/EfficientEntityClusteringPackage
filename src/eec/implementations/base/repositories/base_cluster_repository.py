@@ -1,8 +1,8 @@
-from src.implementations.base.models.base_entity import BaseEntity
-from src.implementations.base.repositories.base_entity_repository import BaseEntityRepository
-from src.implementations.base.models.base_cluster import BaseCluster
-from src.interfaces.interface_cluster_repository.i_cluster_repository import IClusterRepository
-from src.exceptions.general.exceptions import *
+from src.eec.implementations.base.models.base_entity import BaseEntity
+from src.eec.implementations.base.repositories.base_entity_repository import BaseEntityRepository
+from src.eec.implementations.base.models.base_cluster import BaseCluster
+from src.eec.interfaces.interface_cluster_repository.i_cluster_repository import IClusterRepository
+from src.eec.exceptions.general.exceptions import *
 
 import numpy as np
 from typing import Optional, Callable, cast
