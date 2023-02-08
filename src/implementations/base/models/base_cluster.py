@@ -4,7 +4,7 @@ from src.implementations.base.repositories.base_entity_repository import BaseEnt
 from src.exceptions.general.exceptions import *
 
 import numpy as np
-from typing import Optional
+from typing import Optional, Callable
 
 
 class BaseCluster(ICluster):
@@ -132,6 +132,16 @@ class BaseCluster(ICluster):
         '''Calculates the cluster vector based on the entities in the cluster.'''
         self.cluster_vector = np.mean(
             [entity.get_mention_vector() for entity in self.entities], axis=0)
+
+    def get_closest_entities(
+            self, entity: BaseEntity,
+            distance_function: Callable[[np.ndarray, np.ndarray],
+                                        np.ndarray],
+            top_n: int = 10,) -> list[BaseEntity]:
+        '''Returns the top_n closest entities to the given entity.'''
+        _all_entity_vectors = np.array([entity.get_mention_vector() for entity in self.entities])
+        similarities = distance_function(_all_entity_vectors, entity.get_mention_vector())
+        return [self.entities[i] for i in np.argpartition(similarities, -top_n)[-top_n:]]
 
     def to_dict(self) -> dict:
         '''Returns a dict representation of the cluster.'''

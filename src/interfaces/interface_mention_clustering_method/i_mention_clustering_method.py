@@ -4,7 +4,6 @@ from src.interfaces.interface_entity.i_entity import IEntity
 from src.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
 
 import abc
-from typing import Optional, Callable
 
 
 class IMentionClusteringMethod(abc.ABC):

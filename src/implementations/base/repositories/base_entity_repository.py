@@ -130,6 +130,9 @@ class BaseEntityRepository(IEntityRepository):
         for entity in self.entities:
             self.calculate_entity_vector(entity)
 
+    def get_all_entities_in_cluster(self,) -> list[BaseEntity]:
+        return [entity for entity in self.entities if entity.in_cluster]
+
     def to_dict(self) -> dict:
         return {
             "entities": [entity.to_dict() for entity in self.entities],

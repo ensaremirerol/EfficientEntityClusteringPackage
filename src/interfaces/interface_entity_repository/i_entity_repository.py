@@ -31,6 +31,11 @@ class IEntityRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def get_all_entities_in_cluster(self, cluster_id: str) -> list[IEntity]:
+        '''Returns all entities in the given cluster.'''
+        pass
+
+    @abc.abstractmethod
     def update_entity(self, entity: IEntity):
         '''Updates the given entity.'''
         pass
