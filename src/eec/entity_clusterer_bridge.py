@@ -9,10 +9,9 @@ class EntityClustererBridge:
         It does not contain any logic.
     '''
 
-    def __init__(self):
-        self.entity_repository = None
-        self.cluster_repository = None
-        self.mention_clustering_method = None
+    entity_repository: IEntityRepository
+    cluster_repository: IClusterRepository
+    mention_clustering_method: IMentionClusteringMethod
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, 'instance'):
