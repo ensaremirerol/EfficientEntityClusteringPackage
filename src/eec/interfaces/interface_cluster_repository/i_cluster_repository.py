@@ -1,6 +1,6 @@
-from src.eec.interfaces.interface_cluster.i_cluster import ICluster
-from src.eec.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
-from src.eec.interfaces.interface_entity.i_entity import IEntity
+from eec.interfaces.interface_cluster.i_cluster import ICluster
+from eec.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
+from eec.interfaces.interface_entity.i_entity import IEntity
 
 
 import abc

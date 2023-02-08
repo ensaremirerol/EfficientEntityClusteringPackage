@@ -1,5 +1,5 @@
-from src.eec.interfaces.interface_entity.i_entity import IEntity
-from src.eec.exceptions.general.exceptions import *
+from eec.interfaces.interface_entity.i_entity import IEntity
+from eec.exceptions.general.exceptions import *
 
 import abc
 from typing import Optional

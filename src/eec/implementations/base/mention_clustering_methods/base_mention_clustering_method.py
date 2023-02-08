@@ -1,10 +1,10 @@
-from src.eec.interfaces.interface_mention_clustering_method.i_mention_clustering_method import IMentionClusteringMethod
-from src.eec.implementations.base.models.base_cluster import BaseCluster
-from src.eec.implementations.base.models.base_entity import BaseEntity
-from src.eec.implementations.base.repositories.base_entity_repository import BaseEntityRepository
-from src.eec.implementations.base.repositories.base_cluster_repository import BaseClusterRepository
+from eec.interfaces.interface_mention_clustering_method.i_mention_clustering_method import IMentionClusteringMethod
+from eec.implementations.base.models.base_cluster import BaseCluster
+from eec.implementations.base.models.base_entity import BaseEntity
+from eec.implementations.base.repositories.base_entity_repository import BaseEntityRepository
+from eec.implementations.base.repositories.base_cluster_repository import BaseClusterRepository
 
-from src.eec.exceptions.general.exceptions import *
+from eec.exceptions.general.exceptions import *
 
 import numpy as np
 import gensim

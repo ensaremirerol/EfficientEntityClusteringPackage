@@ -1,9 +1,9 @@
 import unittest
 
-from src.eec.implementations.base.models.base_cluster import BaseEntity
-from src.eec.implementations.base.models.base_cluster import BaseCluster
-from src.eec.implementations.base.repositories.base_entity_repository import BaseEntityRepository
-from src.eec.exceptions.general.exceptions import *
+from eec.implementations.base.models.base_cluster import BaseEntity
+from eec.implementations.base.models.base_cluster import BaseCluster
+from eec.implementations.base.repositories.base_entity_repository import BaseEntityRepository
+from eec.exceptions.general.exceptions import *
 
 import numpy as np
 import gensim

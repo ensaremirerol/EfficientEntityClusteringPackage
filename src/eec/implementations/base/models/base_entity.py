@@ -1,4 +1,4 @@
-from src.eec.interfaces.interface_entity.i_entity import IEntity
+from eec.interfaces.interface_entity.i_entity import IEntity
 
 import numpy as np
 from typing import Callable, Optional
