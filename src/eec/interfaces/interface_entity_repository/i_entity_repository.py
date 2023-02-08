@@ -41,6 +41,11 @@ class IEntityRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def add_entity(self, entity: IEntity):
+        '''Adds the given entity.'''
+        pass
+
+    @abc.abstractmethod
     def add_entities(self, entities: list[IEntity]):
         '''Adds the given entities.'''
         pass

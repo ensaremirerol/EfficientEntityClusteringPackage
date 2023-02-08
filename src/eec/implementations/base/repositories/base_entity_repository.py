@@ -49,16 +49,19 @@ class BaseEntityRepository(IEntityRepository):
                 return
         raise NotFoundException(f"Entity with id {entity.entity_id} not found")
 
+    def add_entity(self, entity: BaseEntity):
+        if self.is_in_repository(
+                entity_source=entity.entity_source, entity_source_id=entity.entity_source_id):
+            print(f"Entity with id {entity.entity_id} already exists! Skipping...")
+            return
+        self.calculate_entity_vector(entity)
+        self.last_id += 1
+        entity.entity_id = str(self.last_id)
+        self.entities.append(entity)
+
     def add_entities(self, entities: list[BaseEntity]):
         for entity in entities:
-            if self.is_in_repository(
-                    entity_source=entity.entity_source, entity_source_id=entity.entity_source_id):
-                print(f"Entity with id {entity.entity_id} already exists! Skipping...")
-                continue
-            self.calculate_entity_vector(entity)
-            self.last_id += 1
-            entity.entity_id = str(self.last_id)
-            self.entities.append(entity)
+            self.add_entity(entity)
 
     def delete_entity(self, entity_id: str):
         for i in range(len(self.entities)):
