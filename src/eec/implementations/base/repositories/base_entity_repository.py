@@ -11,7 +11,7 @@ class BaseEntityRepository(IEntityRepository):
     def __init__(self,
                  entities: list[BaseEntity],
                  last_id: int,
-                 keyed_vectors: gensim.models.keyedvectors.KeyedVectors):
+                 keyed_vectors: gensim.models.Word2Vec):
         super().__init__()
         self.keyed_vectors = keyed_vectors
         self.entities = entities
@@ -116,8 +116,9 @@ class BaseEntityRepository(IEntityRepository):
         return unlabeled_entities
 
     def calculate_entity_vector(self, entity: BaseEntity):
-        vecs = [self.keyed_vectors[word]
-                for word in entity.mention.split() if word in self.keyed_vectors]
+        vecs = [
+            self.keyed_vectors.wv[word] for word in entity.mention.split()
+            if word in self.keyed_vectors.wv.key_to_index]
         if len(vecs) == 0:
             entity.has_mention_vector = False
             entity.mention_vector = np.zeros(self.keyed_vectors.vector_size)
@@ -141,7 +142,7 @@ class BaseEntityRepository(IEntityRepository):
 
     @staticmethod
     def from_dict(
-            data: dict, keyed_vectors: gensim.models.keyedvectors.KeyedVectors) -> IEntityRepository:
+            data: dict, keyed_vectors: gensim.models.Word2Vec) -> IEntityRepository:
         entities = [cast(BaseEntity, BaseEntity.from_dict(entity_data))
                     for entity_data in data["entities"]]
         return BaseEntityRepository(

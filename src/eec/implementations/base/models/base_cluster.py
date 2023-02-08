@@ -130,6 +130,9 @@ class BaseCluster(ICluster):
 
     def calculate_cluster_vector(self, ):
         '''Calculates the cluster vector based on the entities in the cluster.'''
+        if len(self.entities) == 0:
+            self.cluster_vector = np.array([])
+            return
         self.cluster_vector = np.mean(
             [entity.get_mention_vector() for entity in self.entities], axis=0)
 
@@ -139,6 +142,7 @@ class BaseCluster(ICluster):
                                         np.ndarray],
             top_n: int = 10,) -> list[BaseEntity]:
         '''Returns the top_n closest entities to the given entity.'''
+        top_n = min(top_n, len(self.entities))
         _all_entity_vectors = np.array([entity.get_mention_vector() for entity in self.entities])
         similarities = distance_function(_all_entity_vectors, entity.get_mention_vector())
         return [self.entities[i] for i in np.argpartition(similarities, -top_n)[-top_n:]]
