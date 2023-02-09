@@ -26,17 +26,18 @@ class BaseClusterRepository(IClusterRepository):
     def get_all_clusters(self) -> list[BaseCluster]:
         return [cluster for cluster in self.clusters]
 
-    def add_cluster(self, cluster: BaseCluster):
+    def add_cluster(self, cluster: BaseCluster) -> BaseCluster:
         '''Adds the given cluster to the repository.'''
         cluster.cluster_id = str(self.last_cluster_id)
         self.last_cluster_id += 1
 
         self.clusters.append(cluster)
 
-    def add_clusters(self, clusters: list[BaseCluster]):
+        return cluster
+
+    def add_clusters(self, clusters: list[BaseCluster]) -> list[BaseCluster]:
         '''Adds the given clusters to the repository.'''
-        for cluster in clusters:
-            self.add_cluster(cluster)
+        return [self.add_cluster(cluster) for cluster in clusters]
 
     def delete_cluster(self, cluster_id: str):
         for cluster in self.clusters:

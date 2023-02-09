@@ -22,12 +22,12 @@ class IClusterRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def add_cluster(self, cluster: ICluster):
+    def add_cluster(self, cluster: ICluster) -> ICluster:
         '''Adds the given cluster.'''
         pass
 
     @abc.abstractmethod
-    def add_clusters(self, clusters: list[ICluster]):
+    def add_clusters(self, clusters: list[ICluster]) -> list[ICluster]:
         '''Adds the given clusters.'''
         pass
 
