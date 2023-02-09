@@ -11,8 +11,7 @@ class BaseEntity(IEntity):
             mention_vector: np.ndarray = np.array([])):
         super().__init__(mention, entity_id, entity_source, entity_source_id, cluster_id is not None, cluster_id)
         self.mention_vector: np.ndarray = mention_vector
-        self.has_mention_vector: bool = self.mention_vector != np.array(
-            [])  # TODO: Use np.equal or something like that
+        self.has_mention_vector: bool = np.equal(mention_vector, np.array([])).all().astype(bool)
 
     def set_cluster_id(self, cluster_id: Optional[str]):
         self.cluster_id = cluster_id
@@ -39,7 +38,8 @@ class BaseEntity(IEntity):
             "in_cluster": self.in_cluster,
             "cluster_id": self.cluster_id,
             "has_mention_vector": self.has_mention_vector,
-            "mention_vector": self.mention_vector.tolist()
+            "mention_vector": self.mention_vector.tolist() if np.equal(
+                self.mention_vector, np.array([])).all().astype(bool) else []
         }
 
     @staticmethod
