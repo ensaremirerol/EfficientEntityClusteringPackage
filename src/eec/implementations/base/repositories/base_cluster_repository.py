@@ -45,10 +45,9 @@ class BaseClusterRepository(IClusterRepository):
 
     def update_cluster(self, cluster: BaseCluster) -> BaseCluster:
         '''Updates the given cluster in the repository.'''
-        for i in range(len(self.clusters)):
-            if self.clusters[i].cluster_id == cluster.cluster_id:
-                self.clusters[i] = cluster
-                self.clusters[i].calculate_cluster_vector()
+        for cluster in self.clusters:
+            if cluster.cluster_id == cluster.cluster_id:
+                cluster.cluster_name = cluster.cluster_name
                 return cluster
         raise NotFoundException('Cluster with id {cluster_id} not found.')
 

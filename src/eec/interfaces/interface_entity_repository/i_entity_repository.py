@@ -36,11 +36,6 @@ class IEntityRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update_entity(self, entity: IEntity) -> IEntity:
-        '''Updates the given entity.'''
-        pass
-
-    @abc.abstractmethod
     def add_entity(self, entity: IEntity) -> IEntity:
         '''Adds the given entity.'''
         pass
