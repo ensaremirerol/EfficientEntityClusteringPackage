@@ -63,11 +63,12 @@ class BaseEntityRepository(IEntityRepository):
                 print(f"Skipping entity {entity.mention}")
         return _entities
 
-    def delete_entity(self, entity_id: str):
+    def delete_entity(self, entity_id: str) -> BaseEntity:
         for i in range(len(self.entities)):
             if self.entities[i].entity_id == entity_id:
-                del self.entities[i]
-                return
+
+                entity = self.entities.pop(i)
+                return entity
         raise NotFoundException(f"Entity with id {entity_id} not found")
 
     def delete_entities(self, entity_ids: list[str]):

@@ -46,12 +46,12 @@ class IEntityRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete_entity(self, entity_id: str):
+    def delete_entity(self, entity_id: str) -> IEntity:
         '''Deletes the given entity.'''
         pass
 
     @abc.abstractmethod
-    def delete_entities(self, entity_ids: list[str]):
+    def delete_entities(self, entity_ids: list[str]) -> list[IEntity]:
         '''Deletes the given entities.'''
         pass
 

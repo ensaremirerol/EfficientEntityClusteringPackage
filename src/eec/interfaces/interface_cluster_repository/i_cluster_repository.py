@@ -37,12 +37,12 @@ class IClusterRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete_cluster(self, cluster_id: str):
+    def delete_cluster(self, cluster_id: str) -> ICluster:
         '''Deletes the given cluster.'''
         pass
 
     @abc.abstractmethod
-    def delete_clusters(self, cluster_ids: list[str]):
+    def delete_clusters(self, cluster_ids: list[str]) -> list[ICluster]:
         '''Deletes the given clusters.'''
         pass
 

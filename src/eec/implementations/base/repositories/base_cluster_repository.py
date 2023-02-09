@@ -51,21 +51,16 @@ class BaseClusterRepository(IClusterRepository):
                 return cluster
         raise NotFoundException('Cluster with id {cluster_id} not found.')
 
-    def delete_cluster(self, cluster_id: str):
-        for cluster in self.clusters:
-            if cluster.cluster_id == cluster_id:
-                for entity in cluster.entities:
+    def delete_cluster(self, cluster_id: str) -> BaseCluster:
+        for i in range(len(self.clusters)):
+            if self.clusters[i].cluster_id == cluster_id:
+                for entity in self.clusters[i].entities:
                     entity.set_cluster_id(None)
-                self.clusters.remove(cluster)
-                return
+                return self.clusters.pop(i)
         raise NotFoundException('Cluster with id {cluster_id} not found.')
 
-    def delete_clusters(self, cluster_ids: list[str]):
-        for cluster in self.clusters:
-            if cluster.cluster_id in cluster_ids:
-                self.clusters.remove(cluster)
-                continue
-            print(f'Cluster with id {cluster.cluster_id} not found. Skipping...')
+    def delete_clusters(self, cluster_ids: list[str]) -> list[BaseCluster]:
+        return [self.delete_cluster(cluster_id) for cluster_id in cluster_ids]
 
     def delete_all_clusters(self):
         self.clusters = []
