@@ -28,6 +28,10 @@ class BaseClusterRepository(IClusterRepository):
 
     def add_cluster(self, cluster: BaseCluster) -> BaseCluster:
         '''Adds the given cluster to the repository.'''
+        for cluster in self.clusters:
+            if cluster.cluster_name == cluster.cluster_name:
+                raise AlreadyExistsException(
+                    f'Cluster with name {cluster.cluster_name} already exists.\n Duplicate cluster names are not allowed')
         cluster.cluster_id = str(self.last_cluster_id)
         self.last_cluster_id += 1
 
@@ -39,9 +43,20 @@ class BaseClusterRepository(IClusterRepository):
         '''Adds the given clusters to the repository.'''
         return [self.add_cluster(cluster) for cluster in clusters]
 
+    def update_cluster(self, cluster: BaseCluster) -> BaseCluster:
+        '''Updates the given cluster in the repository.'''
+        for i in range(len(self.clusters)):
+            if self.clusters[i].cluster_id == cluster.cluster_id:
+                self.clusters[i] = cluster
+                self.clusters[i].calculate_cluster_vector()
+                return cluster
+        raise NotFoundException('Cluster with id {cluster_id} not found.')
+
     def delete_cluster(self, cluster_id: str):
         for cluster in self.clusters:
             if cluster.cluster_id == cluster_id:
+                for entity in cluster.entities:
+                    entity.set_cluster_id(None)
                 self.clusters.remove(cluster)
                 return
         raise NotFoundException('Cluster with id {cluster_id} not found.')

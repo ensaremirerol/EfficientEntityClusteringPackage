@@ -41,12 +41,12 @@ class BaseEntityRepository(IEntityRepository):
     def get_all_entities(self) -> list[BaseEntity]:
         return [entity for entity in self.entities]
 
-    def update_entity(self, entity: BaseEntity):
+    def update_entity(self, entity: BaseEntity) -> BaseEntity:
         for i in range(len(self.entities)):
             if self.entities[i].entity_id == entity.entity_id:
                 self.entities[i] = entity
                 self.calculate_entity_vector(entity)
-                return
+                return entity
         raise NotFoundException(f"Entity with id {entity.entity_id} not found")
 
     def add_entity(self, entity: BaseEntity) -> BaseEntity:
