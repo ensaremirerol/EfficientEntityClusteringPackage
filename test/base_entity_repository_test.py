@@ -18,12 +18,12 @@ class TestBaseEntityRepository(unittest.TestCase):
                 f'mention{i}', str(i),
                 'source', str(i),
                 None, np.random.rand(10)) for i in range(10)]
-        self.keyed_vectors = gensim.models.KeyedVectors(10)
-        self.keyed_vectors.add_vectors(
+        self.keyed_vectors = gensim.models.Word2Vec(vector_size=10)
+        self.keyed_vectors.wv.add_vectors(
             [entity.mention for entity in self.entities],
             [np.random.rand(10) for _ in range(10)]
         )
-        self.keyed_vectors.add_vector(
+        self.keyed_vectors.wv.add_vector(
             'test',
             np.random.rand(10)
         )
@@ -75,7 +75,7 @@ class TestBaseEntityRepository(unittest.TestCase):
             'test'
         )
         self.assertTrue(np.equal(self.entity_repository.get_entity_by_id(
-            '1').mention_vector, self.keyed_vectors['test']).all())
+            '1').mention_vector, self.keyed_vectors.wv['test']).all())
 
     def test_add_entities(self) -> None:
         entity = BaseEntity(
@@ -88,7 +88,7 @@ class TestBaseEntityRepository(unittest.TestCase):
             entity
         )
         self.assertTrue(np.equal(self.entity_repository.get_entity_by_id(
-            '11').mention_vector, self.keyed_vectors['test']).all())
+            '11').mention_vector, self.keyed_vectors.wv['test']).all())
 
     def test_delete_entity(self) -> None:
         self.entity_repository.delete_entity('1')
