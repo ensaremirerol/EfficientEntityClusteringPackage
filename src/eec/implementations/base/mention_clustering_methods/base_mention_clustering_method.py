@@ -11,6 +11,8 @@ import gensim
 from typing import Optional, cast
 from difflib import SequenceMatcher
 
+import logging
+
 class BaseMentionClusteringMethod(IMentionClusteringMethod):
     def __init__(self, name: str, cluster_repository: BaseClusterRepository,
                  entity_repository: BaseEntityRepository, top_n: int = 10, alpha: float = 0.5, beta: float = 0.3, gamma: float = 0.2):
@@ -21,6 +23,7 @@ class BaseMentionClusteringMethod(IMentionClusteringMethod):
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
+        self.logger = logging.getLogger(__name__)
 
 
     def getPossibleClusters(self, entity: BaseEntity) -> list[BaseCluster]:
@@ -37,13 +40,13 @@ class BaseMentionClusteringMethod(IMentionClusteringMethod):
 
         mention_vector = entity.get_mention_vector()
         if mention_vector is None:
-            print("No mention vector found Fallback to only string similarity")
+            self.logger.warning("No mention vector found Fallback to only string similarity")
             return self._fallback_get_possible_clusters(entity)
         all_clusters = self.cluster_repository.clusters
         _all_vectors = [cluster.cluster_vector for cluster in all_clusters if cluster.cluster_vector.size > 0]
         
         if len(_all_vectors) == 0:
-            print("No cluster vectors found Fallback to only string similarity")
+            self.logger.warning("No cluster vectors found Fallback to only string similarity")
             return self._fallback_get_possible_clusters(entity)
 
         _top_n = min(self.top_n, len(_all_vectors))
@@ -91,7 +94,7 @@ class BaseMentionClusteringMethod(IMentionClusteringMethod):
         all_entities_in_cluster: list[BaseEntity] = self.entity_repository.get_all_entities_in_cluster()
 
         if len(all_entities_in_cluster) == 0:
-            print("Fallback failed! Create new cluster")
+            self.logger.warning("Fallback failed! Create new cluster!")
             return []
 
         _top_n = min(self.top_n, len(all_entities_in_cluster))

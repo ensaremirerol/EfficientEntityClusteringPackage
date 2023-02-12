@@ -6,6 +6,8 @@ import gensim
 import numpy as np
 from typing import Optional, cast
 
+import logging
+
 
 class BaseEntityRepository(IEntityRepository):
     def __init__(self,
@@ -16,6 +18,7 @@ class BaseEntityRepository(IEntityRepository):
         self.keyed_vectors = keyed_vectors
         self.entities = entities
         self.last_id = last_id
+        self.logger = logging.getLogger(__name__)
 
     def get_entity_by_id(self, entity_id: str) -> BaseEntity:
         for entity in self.entities:
@@ -58,9 +61,9 @@ class BaseEntityRepository(IEntityRepository):
             try:
                 _entities.append(self.add_entity(entity))
             except AlreadyExistsException:
-                print(
-                    f"Entity with source {entity.entity_source} and source_id {entity.entity_source_id} already exists")
-                print(f"Skipping entity {entity.mention}")
+                self.logger.warning(
+                    f"Entity with source {entity.entity_source} and source_id {entity.entity_source_id} already exists\n"
+                    "Skipping entity {entity.mention}")
         return _entities
 
     def delete_entity(self, entity_id: str) -> BaseEntity:

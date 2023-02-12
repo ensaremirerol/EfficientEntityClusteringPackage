@@ -12,6 +12,7 @@ import gensim
 from typing import cast
 
 
+
 class TestBaseClusterRepository(unittest.TestCase):
     def setUp(self) -> None:
         self.entities = [
