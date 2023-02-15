@@ -28,8 +28,8 @@ class BaseClusterRepository(IClusterRepository):
 
     def add_cluster(self, cluster: BaseCluster) -> BaseCluster:
         '''Adds the given cluster to the repository.'''
-        for cluster in self.clusters:
-            if cluster.cluster_name == cluster.cluster_name:
+        for o in self.clusters:
+            if o.cluster_name == cluster.cluster_name:
                 raise AlreadyExistsException(
                     f'Cluster with name {cluster.cluster_name} already exists.\n Duplicate cluster names are not allowed')
         cluster.cluster_id = str(self.last_cluster_id)
@@ -45,8 +45,8 @@ class BaseClusterRepository(IClusterRepository):
 
     def update_cluster(self, cluster: BaseCluster) -> BaseCluster:
         '''Updates the given cluster in the repository.'''
-        for cluster in self.clusters:
-            if cluster.cluster_id == cluster.cluster_id:
+        for o in self.clusters:
+            if o.cluster_id == cluster.cluster_id:
                 cluster.cluster_name = cluster.cluster_name
                 return cluster
         raise NotFoundException('Cluster with id {cluster_id} not found.')
