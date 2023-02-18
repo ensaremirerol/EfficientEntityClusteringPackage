@@ -12,6 +12,7 @@ class BaseEntity(IEntity):
         super().__init__(mention, entity_id, entity_source, entity_source_id, cluster_id is not None, cluster_id)
         self.mention_vector: np.ndarray = mention_vector
         self.has_mention_vector: bool = has_mention_vector
+        self.priority: int = 0
 
     def set_cluster_id(self, cluster_id: Optional[str]):
         self.cluster_id = cluster_id
@@ -28,6 +29,12 @@ class BaseEntity(IEntity):
             self, other, distance_function: Callable[[np.ndarray, np.ndarray],
                                                      float]) -> float:
         return distance_function(self.get_mention_vector(), other.get_mention_vector())
+
+    def lower_priority(self):
+        self.priority += 1
+
+    def reset_priority(self):
+        self.priority = 0
 
     def to_dict(self) -> dict:
         return {

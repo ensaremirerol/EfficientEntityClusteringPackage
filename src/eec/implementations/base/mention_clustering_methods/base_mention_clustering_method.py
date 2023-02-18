@@ -38,10 +38,11 @@ class BaseMentionClusteringMethod(IMentionClusteringMethod):
         def ps_sim(string: str, target: str) -> float:
             return np.mean([SequenceMatcher(None, target, word).ratio() for word in string.split(" ")]).astype(float)
 
-        mention_vector = entity.get_mention_vector()
-        if mention_vector is None:
+        if not entity.has_mention_vector:
             self.logger.warning("No mention vector found Fallback to only string similarity")
             return self._fallback_get_possible_clusters(entity)
+            
+        mention_vector = entity.get_mention_vector()
         all_clusters = self.cluster_repository.clusters
         _all_vectors = [cluster.cluster_vector for cluster in all_clusters if cluster.cluster_vector.size > 0]
         
