@@ -41,7 +41,7 @@ class BaseMentionClusteringMethod(IMentionClusteringMethod):
         if not entity.has_mention_vector:
             self.logger.warning("No mention vector found Fallback to only string similarity")
             return self._fallback_get_possible_clusters(entity)
-            
+
         mention_vector = entity.get_mention_vector()
         all_clusters = self.cluster_repository.clusters
         _all_vectors = [cluster.cluster_vector for cluster in all_clusters if cluster.cluster_vector.size > 0]
@@ -76,16 +76,24 @@ class BaseMentionClusteringMethod(IMentionClusteringMethod):
         cluster_entity_ws_sim = np.array(cluster_entity_ws_sim)
         cluster_entity_ps_sim = np.array(cluster_entity_ps_sim)
 
-        cluster_entity_ws_sim_index = np.where(cluster_entity_ws_sim >= self.gamma)
-        other_clusters = np.where(cluster_entity_ws_sim < self.gamma)
+        cluster_entity_ws_sim_index = []
+        other_clusters = []
 
-        # other cluster scores
-        other_cluster_scores = np.multiply(vector_similarities[other_clusters], self.alpha) + np.multiply(cluster_entity_ps_sim[other_clusters], self.beta)
+        for i in range(len(cluster_entity_ws_sim)):
+            if cluster_entity_ws_sim[i] > self.gamma:
+                cluster_entity_ws_sim_index.append(i)
+            else:
+                other_clusters.append(i)
+
 
         # whole string cluster sort
         ws_cluster_sorted = np.argpartition(cluster_entity_ws_sim, -len(cluster_entity_ws_sim_index))[-len(cluster_entity_ws_sim_index):]
 
-        return [top_clusters[index] for index in ws_cluster_sorted] + [top_clusters[index] for index in other_clusters[0][np.argpartition(other_cluster_scores, -len(other_cluster_scores))[-len(other_cluster_scores):]]]
+        # other cluster scores
+        other_cluster_scores = np.multiply(vector_similarities[other_clusters], self.alpha) + np.multiply(cluster_entity_ps_sim[other_clusters], self.beta)
+        other_cluster_scores_sorted = np.argpartition(other_cluster_scores, -len(other_cluster_scores))[-len(other_cluster_scores):]
+
+        return [top_clusters[index] for index in ws_cluster_sorted] + [top_clusters[index] for index in other_cluster_scores_sorted]
 
     def _fallback_get_possible_clusters(self, entity: BaseEntity) -> list[BaseCluster]:
         def ws_sim(string: str, target: str) -> float:
