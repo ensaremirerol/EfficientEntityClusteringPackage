@@ -112,16 +112,13 @@ class BaseEntityRepository(IEntityRepository):
 
     def get_random_unlabeled_entities(self, count: int) -> list[BaseEntity]:
         unlabeled_entities = []
-        i = -1
-        while len(unlabeled_entities) < count:
-            i += 1
-            if i >= len(self.entities):
-                break
-            if not self.entities[i].in_cluster:
-                unlabeled_entities.append(self.entities[i])
+        unlabeled_entities = [entity for entity in self.entities if not entity.in_cluster]
         if len(unlabeled_entities) == 0:
             raise NotFoundException("No unlabeled entities found")
-        return unlabeled_entities
+        if len(unlabeled_entities) < count:
+            return unlabeled_entities
+        indexes = np.random.randint(0, len(unlabeled_entities), count)
+        return [unlabeled_entities[index] for index in indexes]
 
     def calculate_entity_vector(self, entity: BaseEntity):
         vecs = [
