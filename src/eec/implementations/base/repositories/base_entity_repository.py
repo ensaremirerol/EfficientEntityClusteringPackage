@@ -104,10 +104,11 @@ class BaseEntityRepository(IEntityRepository):
         self.entities = []
 
     def get_random_unlabeled_entity(self) -> BaseEntity:
-        for entity in self.entities:
-            if not entity.in_cluster:
-                return entity
-        raise NotFoundException("No unlabeled entities found")
+        unlabeled_entities = []
+        unlabeled_entities = [entity for entity in self.entities if not entity.in_cluster]
+        if len(unlabeled_entities) == 0:
+            raise NotFoundException("No unlabeled entities found")
+        return unlabeled_entities[np.random.randint(0, len(unlabeled_entities))]
 
     def get_random_unlabeled_entities(self, count: int) -> list[BaseEntity]:
         unlabeled_entities = []
