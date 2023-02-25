@@ -127,7 +127,7 @@ class Neo4JMentionClusteringMethod(IMentionClusteringMethod):
         ws_sim_scores = [ws_sim(o_entity.get_mention(), mention) for o_entity in all_entities_in_cluster]
         top_entity_indexes = np.argpartition(ws_sim_scores, -_top_n)[-_top_n:]
         top_entities = [all_entities_in_cluster[index] for index in top_entity_indexes]
-        top_entities_ids = [o_entity.get_id() for o_entity in top_entities]
+        top_entities_ids = [o_entity.get_entity_id() for o_entity in top_entities]
         top_clusters : list[Neo4JCluster] = self.cluster_repository.cluster_of_entities(top_entities_ids)
         
         # remove duplicates
