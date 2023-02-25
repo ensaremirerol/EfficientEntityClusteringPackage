@@ -61,7 +61,8 @@ class Neo4JEntityRepository(IEntityRepository):
     def add_entities(self, entities: list[Neo4JEntity]):
         for entity in entities:
             self.calculate_entity_vector(entity)
-        self.neo4j_helper.run_query(Neo4J_CreateEntitiesHelper(entities))
+        result = self.neo4j_helper.run_query(Neo4J_CreateEntitiesHelper(entities))
+        return cast(list[Neo4JEntity], result['entities'])
 
     def delete_entity(self, entity_id: str) -> Neo4JEntity:
         result = self.neo4j_helper.run_query(
