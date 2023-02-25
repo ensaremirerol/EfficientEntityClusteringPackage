@@ -29,9 +29,6 @@ class Neo4JHelper():
         self._driver = GraphDatabase.driver(uri, auth=(user, password))
         Neo4JHelper._instance = self
 
-    def __del__(self):
-        self._driver.close()
-
     def close(self):
         self._driver.close()
         Neo4JHelper._instance = None
