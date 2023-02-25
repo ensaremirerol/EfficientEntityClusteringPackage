@@ -30,5 +30,5 @@ class Neo4J_GetEntitiesBySourceHelper(INeo4JQueryHelper):
 
     def consume(self, result: list[Record]) -> dict:
         return {
-            'entities': [Neo4JEntity.from_dict(record['e']) for record in result] if len(result) > 0 else None
+            'entities': [Neo4JEntity.from_dict(record['e']) for record in result] if len(result) > 0 else []
         }
