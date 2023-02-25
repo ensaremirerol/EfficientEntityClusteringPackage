@@ -1,4 +1,5 @@
 from eec.interfaces.interface_entity.i_entity import IEntity
+from eec.implementations.neo4j.exceptions.neo4j_exceptions import *
 
 import numpy as np
 from typing import Callable, Optional
@@ -15,8 +16,14 @@ class Neo4JEntity(IEntity):
         self.priority: int = 0
 
     def set_cluster_id(self, cluster_id: Optional[str]):
-        self.cluster_id = cluster_id
-        self.in_cluster = cluster_id is not None
+        raise Neo4J_DoNotUseThisException(
+            "Neo4J does not support setting the cluster id of an entity.\n Check for relationships instead."
+        )
+
+    def get_cluster_id(self) -> Optional[str]:
+        raise Neo4J_DoNotUseThisException(
+            "Neo4J does not support getting the cluster id of an entity.\n Check for relationships instead."
+        )
 
     def get_mention_vector(self) -> np.ndarray:
         return self.mention_vector
@@ -48,8 +55,8 @@ class Neo4JEntity(IEntity):
             "mention_vector": self.mention_vector.tolist()
         }
 
-    @staticmethod
-    def from_dict(map: dict) -> IEntity:
+    @classmethod
+    def from_dict(cls, map: dict) -> 'Neo4JEntity':
         mention_vector = np.asarray(map["mention_vector"])
         return Neo4JEntity(
             map["mention"], map["entity_id"], map["entity_source"], map["entity_source_id"],

@@ -1,35 +1,163 @@
+from eec.interfaces.interface_cluster.i_cluster import ICluster
+from eec.implementations.neo4j.models.neo4j_entity import Neo4JEntity
+from eec.implementations.neo4j.repositories.neo4j_entity_repository import Neo4JEntityRepository
 from eec.exceptions.general.exceptions import *
+from eec.implementations.neo4j.exceptions.neo4j_exceptions import *
 
 import numpy as np
 from typing import Optional, Callable
 
 
-class Neo4JCluster():
+class Neo4JCluster(ICluster):
 
     def __init__(self, cluster_id: str,
                  cluster_name: str,
-                 entities: list[str],
+                 entities: list[Neo4JEntity],
                  cluster_vector: np.ndarray = np.array([])):
-        self.cluster_id = cluster_id
+        super().__init__(cluster_id, cluster_name)
         self.cluster_name = cluster_name
-        self.entities: list[str] = entities
+        self.entities: list[Neo4JEntity] = entities
         self.cluster_vector: np.ndarray = cluster_vector
+
+    def get_entities(self) -> list[Neo4JEntity]:
+        '''Returns the entities of the cluster.'''
+        return self.entities
+
+    def get_entity_by_id(self, entity_id: str) -> Neo4JEntity:
+        '''Returns the entity with the given entity id.'''
+        for entity in self.entities:
+            if entity.get_entity_id() == entity_id:
+                return entity
+        raise NotFoundException(
+            f"Entity with id {entity_id} not found in cluster {self.cluster_id}-{self.cluster_name}")
+
+    def get_entity_by_mention(
+            self, mention: str) -> Neo4JEntity:
+        '''Returns the entity with the given mention.'''
+        for entity in self.entities:
+            if entity.get_mention() == mention:
+                return entity
+        raise NotFoundException(
+            f"Entity with mention {mention} not found in cluster {self.cluster_id}-{self.cluster_name}")
+
+    def get_entity_by_source_id(
+            self, source: str, source_id: str) -> Neo4JEntity:
+        '''Returns the entity with the given source and source id.'''
+        for entity in self.entities:
+            if entity.get_entity_source() == source and entity.get_entity_source_id() == source_id:
+                return entity
+        raise NotFoundException(
+            f"Entity with source {source} and source_id {source_id} not found in cluster {self.cluster_id}-{self.cluster_name}")
+
+    def get_entities_by_source(
+            self, source: str) -> list[Neo4JEntity]:
+        '''Returns the entities with the given source.'''
+        entities = []
+        for entity in self.entities:
+            if entity.get_entity_source() == source:
+                entities.append(entity)
+        return entities
+
+    def is_in_cluster(self, entity_id: Optional[str] = None,
+                      entity_source: Optional[str] = None,
+                      entity_source_id: Optional[str] = None,
+                      entity: Optional[Neo4JEntity] = None) -> bool:
+        '''
+        Returns True if the entity is in the cluster, False otherwise.
+        You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
+        '''
+        try:
+            if entity is not None:
+                return entity in self.entities
+
+            if entity_id is not None:
+                return self.get_entity_by_id(entity_id) is not None
+
+            if entity_source is not None and entity_source_id is not None:
+                return self.get_entity_by_source_id(entity_source, entity_source_id) is not None
+
+        except NotFoundException:
+            return False
+
+        if (entity_source is None and entity_source_id is not None) or (entity_source is not None and entity_source_id is None):
+            raise ArgumentException("You must provide both entity_source and entity_source_id")
+
+        raise ArgumentException(
+            "You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id")
+
+    def add_entity(self, entity: Neo4JEntity):
+        '''Adds the given entity to the cluster.'''
+        if self.is_in_cluster(entity=entity):
+            raise AlreadyExistsException(
+                f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is already in the cluster {self.cluster_id}-{self.cluster_name}")
+        if entity.in_cluster:
+            raise AlreadyInClusterException(
+                f"Entity with id {entity.get_entity_id()} and name {entity.get_mention()} is in cluster with id {entity.cluster_id}")
+        self.entities.append(entity)
+        self.calculate_cluster_vector()
+
+    def remove_entity(
+            self, entity_id: Optional[str] = None, entity_source: Optional[str] = None,
+            entity_source_id: Optional[str] = None, entity: Optional[Neo4JEntity] = None) -> Neo4JEntity:
+        '''
+        Removes the given entity from the cluster.
+        You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id
+        '''
+        if entity is not None:
+            self.entities.remove(entity)
+            self.calculate_cluster_vector()
+            return entity
+
+        if entity_id is not None:
+            entity = self.get_entity_by_id(entity_id)
+            self.entities.remove(self.get_entity_by_id(entity_id))
+            self.calculate_cluster_vector()
+            return entity
+
+        if entity_source is not None and entity_source_id is not None:
+            entity = self.get_entity_by_source_id(entity_source, entity_source_id)
+            self.entities.remove(
+                entity)
+            self.calculate_cluster_vector()
+            return entity
+
+        elif (entity_source is None and entity_source_id is not None) or (entity_source is not None and entity_source_id is None):
+            raise ArgumentException("You must provide both entity_source and entity_source_id")
+
+        raise ArgumentException(
+            "You must provide at least one of the following: entity_id, entity or both entity_source and entity_source_id")
+
+    def calculate_cluster_vector(self, ):
+        '''Calculates the cluster vector based on the entities in the cluster.'''
+        raise Neo4J_DoNotUseThisException(
+            "This method is not supported for Neo4J clusters.\nUse Neo4JClusterRepository.calculate_cluster_vector(cluster_id) instead.")
+
+    def get_closest_entities(
+            self, entity: Neo4JEntity,
+            distance_function: Callable[[np.ndarray, np.ndarray],
+                                        np.ndarray],
+            top_n: int = 10,) -> list[Neo4JEntity]:
+        '''Returns the top_n closest entities to the given entity.'''
+        top_n = min(top_n, len(self.entities))
+        _all_entity_vectors = np.array([entity.get_mention_vector() for entity in self.entities])
+        similarities = distance_function(_all_entity_vectors, entity.get_mention_vector())
+        return [self.entities[i] for i in np.argpartition(similarities, -top_n)[-top_n:]]
 
     def to_dict(self) -> dict:
         '''Returns a dict representation of the cluster.'''
         return {
             "cluster_id": self.cluster_id,
             "cluster_name": self.cluster_name,
-            "entities": [entity for entity in self.entities],
+            "entities": [entity.entity_id for entity in self.entities],
             "cluster_vector": self.cluster_vector.tolist()
         }
 
-    @staticmethod
-    def from_dict(cluster_dict: dict):
+    @classmethod
+    def from_dict(cls, cluster_dict: dict, entities: list[Neo4JEntity]) -> 'Neo4JCluster':
         '''Returns a cluster from a dict representation.'''
         return Neo4JCluster(cluster_dict["cluster_id"],
                             cluster_dict["cluster_name"],
-                            cluster_dict["entities"],
+                            entities,
                             np.array(cluster_dict["cluster_vector"]))
 
     def __str__(self):
