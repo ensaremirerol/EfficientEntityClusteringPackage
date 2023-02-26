@@ -3,6 +3,10 @@ from typing import Optional
 
 
 class IEntity(abc.ABC):
+    """
+    Interface for an entity.
+    An entity is a mention of a real world object.
+    """
     def __init__(
             self, mention: str, entity_id: str, entity_source: str, entity_source_id: str,
             in_cluster: bool = False, cluster_id: Optional[str] = None):

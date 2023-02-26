@@ -7,6 +7,10 @@ import abc
 
 
 class IMentionClusteringMethod(abc.ABC):
+    """
+    Interface for a mention clustering method.
+    """
+
     def __init__(self, name: str, cluster_repository: IClusterRepository,
                  entity_repository: IEntityRepository):
         self.name: str = name

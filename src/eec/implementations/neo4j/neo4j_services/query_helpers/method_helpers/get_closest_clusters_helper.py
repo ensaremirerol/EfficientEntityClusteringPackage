@@ -23,6 +23,8 @@ class Neo4J_GetClosestClustersHelper(INeo4JQueryHelper):
                 MATCH (c:Cluster)-[:HAS_ENTITY]->(e:Entity)
                 WHERE c.cluster_vector <> []
                 WITH c, e, gds.similarity.cosine($vector, c.cluster_vector) AS similarity
+                SET e.cluster_id = COALESCE(c.cluster_id, null)
+                SET e.in_cluster = COALESCE(c.cluster_id IS NOT NULL, false)
                 RETURN c, COLLECT(e) AS e, similarity ORDER BY similarity DESC LIMIT $n
             '''
         ))

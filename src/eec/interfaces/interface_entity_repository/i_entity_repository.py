@@ -5,6 +5,9 @@ import abc
 
 
 class IEntityRepository(abc.ABC):
+    """
+    Interface for an entity repository.
+    """
     @abc.abstractmethod
     def get_entity_by_id(self, entity_id: str) -> IEntity:
         '''Returns the entity with the given entity id.'''

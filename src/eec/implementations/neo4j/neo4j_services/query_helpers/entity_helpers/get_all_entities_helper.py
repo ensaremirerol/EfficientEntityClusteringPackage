@@ -19,7 +19,13 @@ class Neo4J_GetAllEntitiesHelper(INeo4JQueryHelper):
 
     def __init__(self, ):
         super().__init__('get_all_entities', query=Query(
-            '''MATCH (e:Entity) RETURN e'''))
+            '''
+            MATCH (e:Entity)
+            OPTIONAL MATCH (c:Cluster)-[:HAS_ENTITY]->(e)
+            SET e.cluster_id = COALESCE(c.cluster_id, null)
+            SET e.in_cluster = COALESCE(c.cluster_id IS NOT NULL, false)
+            RETURN e
+            '''))
 
     def consume(self, result: list[Record]) -> dict:
         return {

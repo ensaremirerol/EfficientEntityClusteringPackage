@@ -6,6 +6,11 @@ from typing import Optional
 
 
 class ICluster(abc.ABC):
+    """
+    Interface for a cluster.
+    A cluster is a set of entities that are considered to be the same or similar.
+    """
+
     def __init__(self, cluster_id: str,
                  cluster_name: str,):
         self.cluster_id = cluster_id

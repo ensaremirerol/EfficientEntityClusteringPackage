@@ -21,7 +21,13 @@ class Neo4J_GetEntityByIdHelper(INeo4JQueryHelper):
     def __init__(self, entity_id: str):
         super().__init__(
             'get_entity_by_id',
-            query=Query('''MATCH (e:Entity {entity_id: $entity_id}) RETURN e''')
+            query=Query('''
+                MATCH (e:Entity {entity_id: $entity_id})
+                OPTIONAL MATCH (c:Cluster)-[:HAS_ENTITY]->(e)
+                SET e.cluster_id = COALESCE(c.cluster_id, null)
+                SET e.in_cluster = COALESCE(c.cluster_id IS NOT NULL, false)
+                RETURN e
+            ''')
         )
         self.entity_id = entity_id
 

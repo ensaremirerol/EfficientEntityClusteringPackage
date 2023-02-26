@@ -21,9 +21,7 @@ class Neo4JEntity(IEntity):
         )
 
     def get_cluster_id(self) -> Optional[str]:
-        raise Neo4J_DoNotUseThisException(
-            "Neo4J does not support getting the cluster id of an entity.\n Check for relationships instead."
-        )
+        return self.cluster_id
 
     def get_mention_vector(self) -> np.ndarray:
         return self.mention_vector

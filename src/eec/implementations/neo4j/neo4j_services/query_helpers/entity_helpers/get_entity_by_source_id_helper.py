@@ -22,7 +22,12 @@ class Neo4J_GetEntityBySourceIdHelper(INeo4JQueryHelper):
 
     def __init__(self, source: str, source_id: str):
         super().__init__('get_entity_by_source_id', query=Query(
-            '''MATCH (e:Entity {entity_source: $source, entity_source_id: $source_id}) RETURN e'''))
+            '''
+            MATCH (e:Entity {entity_source: $source, entity_source_id: $source_id})
+            OPTIONAL MATCH (c:Cluster)-[:HAS_ENTITY]->(e)
+            SET e.cluster_id = COALESCE(c.cluster_id, null)
+            SET e.in_cluster = COALESCE(c.cluster_id IS NOT NULL, false)
+            RETURN e'''))
         self.source = source
         self.source_id = source_id
 

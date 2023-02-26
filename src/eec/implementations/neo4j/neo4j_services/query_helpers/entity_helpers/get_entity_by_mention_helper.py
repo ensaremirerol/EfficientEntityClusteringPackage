@@ -21,7 +21,13 @@ class Neo4J_GetEntityByMentionHelper(INeo4JQueryHelper):
     def __init__(self, mention: str):
         super().__init__(
             'get_entity_by_mention',
-            query=Query('''MATCH (e:Entity {mention: $mention}) RETURN e''')
+            query=Query('''
+            MATCH (e:Entity {mention: $mention})
+            OPTIONAL MATCH (c:Cluster)-[:HAS_ENTITY]->(e)
+            SET e.cluster_id = COALESCE(c.cluster_id, null)
+            SET e.in_cluster = COALESCE(c.cluster_id IS NOT NULL, false)
+            RETURN e
+            ''')
         )
         self.mention = mention
 

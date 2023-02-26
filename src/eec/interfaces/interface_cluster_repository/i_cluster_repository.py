@@ -8,6 +8,10 @@ from typing import Optional
 
 
 class IClusterRepository(abc.ABC):
+    """
+    Interface for a cluster repository.
+    """
+
     def __init__(self, entity_repository: IEntityRepository):
         self.entity_repository = entity_repository
 
