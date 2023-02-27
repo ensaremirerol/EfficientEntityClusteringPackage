@@ -27,7 +27,7 @@ class Neo4J_CreateUserHelper(INeo4JQueryHelper):
                     user_name: $user_name,
                     role: $role,
                     hashed_password: $hashed_password
-                }
+                })
                 RETURN user
             ''')
         )
