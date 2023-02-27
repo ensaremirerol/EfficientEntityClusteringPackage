@@ -1,6 +1,7 @@
 from neo4j import GraphDatabase
 from eec.implementations.neo4j.neo4j_services.query_helpers.i_neo4j_query_helper import INeo4JQueryHelper
-
+from eec.implementations.neo4j.exceptions.neo4j_exceptions import Neo4J_QueryExecutionException
+import logging
 # singleton
 
 
@@ -27,6 +28,8 @@ class Neo4JHelper():
             print("To reinitialize, call Neo4JHelper.close() first")
             return
         self._driver = GraphDatabase.driver(uri, auth=(user, password))
+        self._logger = logging.getLogger(__name__)
+        self._logger.info("Initialized Neo4JHelper")
         Neo4JHelper._instance = self
 
     def close(self):
@@ -35,7 +38,14 @@ class Neo4JHelper():
 
     def run_query(self, query_helper: INeo4JQueryHelper) -> dict:
         """Runs the given query helper and returns the result."""
-        with self._driver.session() as session:
-            result = session.run(query_helper.query, query_helper.get_arguments())
-            data = list(result)
-            return query_helper.consume(data)
+        self._logger.info("Running query: %s", query_helper.name)
+        try:
+            with self._driver.session() as session:
+                result = session.run(query_helper.query, query_helper.get_arguments())
+                data = list(result)
+                self._logger.debug("Query result: %s", data)
+                return query_helper.consume(data)
+
+        except Exception as e:
+            self._logger.error("Query failed: %s", e)
+            raise Neo4J_QueryExecutionException(query_helper.name, e)
