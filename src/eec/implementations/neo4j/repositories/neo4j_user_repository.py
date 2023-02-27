@@ -51,7 +51,8 @@ class Neo4JUserRepository(IUserRepository):
         if self.user_name_exists(username):
             raise AlreadyExistsException(
                 f'User with name {username} already exists in repository')
-        user = Neo4JUser(username, hashed_password, role)
+        user = Neo4JUser(user_id='', user_name=username,
+                         hashed_password=hashed_password, role=role)
         result = self.neo4j_helper.run_query(
             Neo4J_CreateUserHelper(user))
 
