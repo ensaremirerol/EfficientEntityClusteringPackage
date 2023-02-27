@@ -5,3 +5,5 @@ from .models.neo4j_cluster import Neo4JCluster
 from .repositories.neo4j_cluster_repository import Neo4JClusterRepository
 from .neo4j_services.neo4j_helper import Neo4JHelper
 from .mention_clustering_methods.neo4j_mention_clustering_method import Neo4JMentionClusteringMethod
+from .repositories.neo4j_user_repository import Neo4JUserRepository
+from .models.neo4j_user import Neo4JUser

@@ -1,6 +1,7 @@
 from eec.interfaces.interface_cluster_repository.i_cluster_repository import IClusterRepository
 from eec.interfaces.interface_mention_clustering_method.i_mention_clustering_method import IMentionClusteringMethod
 from eec.interfaces.interface_entity_repository.i_entity_repository import IEntityRepository
+from eec.interfaces.interface_user_repository.i_user_repository import IUserRepository
 
 
 class EntityClustererBridge:
@@ -12,6 +13,7 @@ class EntityClustererBridge:
     entity_repository: IEntityRepository
     cluster_repository: IClusterRepository
     mention_clustering_method: IMentionClusteringMethod
+    user_repository: IUserRepository
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, 'instance'):
@@ -26,5 +28,8 @@ class EntityClustererBridge:
 
     def set_mention_clustering_method(self, mention_clustering_method: IMentionClusteringMethod):
         self.mention_clustering_method = mention_clustering_method
+    
+    def set_user_repository(self, user_repository: IUserRepository):
+        self.user_repository = user_repository
 
     
