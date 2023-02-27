@@ -26,7 +26,6 @@ class Neo4J_CreateUserHelper(INeo4JQueryHelper):
                     user_id: apoc.create.uuid(),
                     user_name: $user_name,
                     role: $role,
-                    salt: $salt,
                     hashed_password: $hashed_password
                 }
                 RETURN user
@@ -38,7 +37,6 @@ class Neo4J_CreateUserHelper(INeo4JQueryHelper):
         return {
             'user_name': self.user.user_name,
             'role': self.user.role,
-            'salt': self.user.salt,
             'hashed_password': self.user.hashed_password
         }
 

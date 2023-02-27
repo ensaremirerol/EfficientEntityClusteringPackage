@@ -77,12 +77,11 @@ class BaseUserRepository(IUserRepository):
         self.users[user_id].role = role
         return self.users[user_id]
 
-    def change_password(self, user_id: str, salt: str, hashed_password: str) -> BaseUser:
+    def change_password(self, user_id: str, hashed_password: str) -> BaseUser:
         """Updates a user object in the repository"""
         if not self.user_exists(user_id):
             raise NotFoundException(
                 f'User with id {user_id} not found in repository')
-        self.users[user_id].salt = salt
         self.users[user_id].hashed_password = hashed_password
         return self.users[user_id]
 

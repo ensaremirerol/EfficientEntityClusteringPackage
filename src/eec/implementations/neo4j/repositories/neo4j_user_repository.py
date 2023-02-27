@@ -87,13 +87,13 @@ class Neo4JUserRepository(IUserRepository):
             raise Exception('Failed to update user')
         return cast(Neo4JUser, result['user'])
 
-    def change_password(self, user_id: str, salt: str, hashed_password: str) -> Neo4JUser:
+    def change_password(self, user_id: str, hashed_password: str) -> Neo4JUser:
         """Updates a user object in the repository"""
         if not self.user_exists(user_id):
             raise NotFoundException(
                 f'User with id {user_id} not found in repository')
         result = self.neo4j_helper.run_query(
-            Neo4J_ChangeUserPasswordHelper(user_id, salt, hashed_password))
+            Neo4J_ChangeUserPasswordHelper(user_id, hashed_password))
 
         if result['user'] is None:
             raise Exception('Failed to change password')

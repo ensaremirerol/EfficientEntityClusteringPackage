@@ -5,12 +5,11 @@ class IUser(ABC):
     """Interface for user class"""
 
     def __init__(
-            self, user_id: str, user_name: str, role: str = '', salt: str = '',
+            self, user_id: str, user_name: str, role: str = '',
             hashed_password: str = ''):
         self.user_id = user_id
         self.user_name = user_name
         self.role = role
-        self.salt = salt
         self.hashed_password = hashed_password
 
     def get_user_id(self):
@@ -21,9 +20,6 @@ class IUser(ABC):
 
     def get_user_role(self):
         return self.role
-
-    def get_user_salt(self):
-        return self.salt
 
     def get_user_hashed_password(self):
         return self.hashed_password
@@ -36,7 +32,6 @@ class IUser(ABC):
             'role': self.role,
         }
         if include_password:
-            data['salt'] = self.salt
             data['hashed_password'] = self.hashed_password
 
         return data
@@ -45,5 +40,5 @@ class IUser(ABC):
     def from_dict(cls, data: dict):
         """Returns a user object from a dictionary"""
         return cls(
-            data['user_id'], data['user_name'], data['role'], data['salt'],
+            data['user_id'], data['user_name'], data['role'],
             data['hashed_password'])

@@ -49,7 +49,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def change_password(self, user_id: str, salt: str, hashed_password: str) -> IUser:
+    def change_password(self, user_id: str, hashed_password: str) -> IUser:
         """Updates a user object in the repository"""
         pass
 

@@ -19,25 +19,22 @@ class Neo4J_ChangeUserPasswordHelper(INeo4JQueryHelper):
         }
     """
 
-    def __init__(self, user_id: str, hashed_password: str, salt: str):
+    def __init__(self, user_id: str, hashed_password: str):
         super().__init__(
             'update_user',
             query=Query('''
                 MATCH (user:User {user_id: $user_id})
                 SET user.hashed_password = $hashed_password
-                SET user.salt = $salt
                 RETURN user
             ''')
         )
         self.user_id = user_id
         self.hashed_password = hashed_password
-        self.salt = salt
 
     def get_arguments(self) -> dict:
         return {
             'user_id': self.user_id,
             'hashed_password': self.hashed_password,
-            'salt': self.salt
         }
 
     def consume(self, result: list[Record]) -> dict:
