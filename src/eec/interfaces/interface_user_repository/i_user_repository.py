@@ -34,7 +34,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def add_user(self, user: IUser) -> IUser:
+    def add_user(self, username: str, hashed_password: str, role: str) -> IUser:
         """Adds a user object to the repository"""
         pass
 

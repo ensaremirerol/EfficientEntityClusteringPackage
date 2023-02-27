@@ -157,7 +157,7 @@ class BaseCluster(ICluster):
         }
 
     @staticmethod
-    def from_dict(cluster_dict: dict, entity_repository: BaseEntityRepository) -> ICluster:
+    def from_dict(cluster_dict: dict, entity_repository: BaseEntityRepository) -> 'BaseCluster':
         '''Returns a cluster from a dict representation.'''
         return BaseCluster(cluster_dict["cluster_id"],
                            cluster_dict["cluster_name"],

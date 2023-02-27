@@ -49,7 +49,7 @@ class BaseEntity(IEntity):
         }
 
     @staticmethod
-    def from_dict(map: dict) -> IEntity:
+    def from_dict(map: dict) -> 'BaseEntity':
         mention_vector = np.asarray(map["mention_vector"])
         return BaseEntity(
             map["mention"], map["entity_id"], map["entity_source"], map["entity_source_id"],
