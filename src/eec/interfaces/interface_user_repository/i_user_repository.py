@@ -39,7 +39,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def change_username(self, user_id: str, username: str) -> IUser:
+    def change_username(self, user_id: str, username: str, role:str='') -> IUser:
         """Updates a user object in the repository"""
         pass
 

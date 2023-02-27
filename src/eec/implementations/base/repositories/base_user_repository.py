@@ -39,11 +39,13 @@ class BaseUserRepository(IUserRepository):
         """Returns a list of all user objects"""
         return list(self.users.values())
 
-    def add_user(self, user: BaseUser) -> BaseUser:
+    def add_user(self, username:str, hashed_password:str, role:str=''):
         """Adds a user object to the repository"""
-        if self.user_name_exists(user.get_user_name()):
+        if self.user_name_exists(username):
             raise AlreadyExistsException(
-                f'User with name {user.get_user_name()} already exists in repository')
+                f'User with name {username} already exists in repository')
+        
+        user = BaseUser(username, hashed_password, role)
 
         user.user_id = str(self.last_id)
         self.last_id += 1
