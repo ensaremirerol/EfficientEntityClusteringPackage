@@ -174,4 +174,4 @@ poetry.toml
 
 .vscode/
 
-data/
+data
