@@ -1,9 +1,6 @@
 import unittest
 
-from eec.implementations.base.models.base_cluster import BaseEntity
-from eec.implementations.base.repositories.base_entity_repository import BaseEntityRepository
-
-from eec.exceptions.general.exceptions import *
+from eec import BaseEntityRepository, EntityModel, NotFoundException
 
 import numpy as np
 import gensim
@@ -14,10 +11,11 @@ from typing import cast
 class TestBaseEntityRepository(unittest.TestCase):
     def setUp(self) -> None:
         self.entities = [
-            BaseEntity(
-                f'mention{i}', str(i),
-                'source', str(i),
-                None, np.random.rand(10)) for i in range(10)]
+            EntityModel(
+                mention=f'mention{i}', entity_id=f'{i}',
+                entity_source='source', entity_source_id=f'{i}',
+                mention_vector=np.random.rand(10).tolist()
+            ) for i in range(10)]
         self.keyed_vectors = gensim.models.Word2Vec(vector_size=10)
         self.keyed_vectors.wv.add_vectors(
             [entity.mention for entity in self.entities],
@@ -39,12 +37,6 @@ class TestBaseEntityRepository(unittest.TestCase):
     def test_get_entity_by_id(self) -> None:
         self.assertEqual(
             self.entity_repository.get_entity_by_id('1'),
-            self.entities[1]
-        )
-
-    def test_get_entity_by_mention(self) -> None:
-        self.assertEqual(
-            self.entity_repository.get_entity_by_mention('mention1'),
             self.entities[1]
         )
 
@@ -78,10 +70,10 @@ class TestBaseEntityRepository(unittest.TestCase):
             '1').mention_vector, self.keyed_vectors.wv['test']).all())
 
     def test_add_entities(self) -> None:
-        entity = BaseEntity(
+        entity = EntityModel(
             'test', '11',
             'source', '11',
-            None, np.random.rand(10))
+            None, np.random.rand(10).tolist())
         self.entity_repository.add_entities([entity])
         self.assertEqual(
             self.entity_repository.get_entity_by_id('11'),
@@ -105,6 +97,6 @@ class TestBaseEntityRepository(unittest.TestCase):
 
     def test_get_random_unlabelled_entity(self) -> None:
         for entity in self.entities[:-1]:
-            entity.in_cluster = True
+            entity.has_cluster = True
         entity = self.entity_repository.get_random_unlabeled_entities(1)[0]
-        self.assertFalse(entity.in_cluster)
+        self.assertFalse(entity.has_cluster)

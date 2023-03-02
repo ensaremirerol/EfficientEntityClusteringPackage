@@ -1,10 +1,6 @@
 import unittest
 
-from eec.implementations.base.models.base_cluster import BaseEntity
-from eec.implementations.base.models.base_cluster import BaseCluster
-from eec.implementations.base.repositories.base_entity_repository import BaseEntityRepository
-from eec.implementations.base.repositories.base_cluster_repository import BaseClusterRepository
-from eec.exceptions.general.exceptions import *
+from eec import *
 
 import numpy as np
 import gensim
@@ -12,32 +8,25 @@ import gensim
 from typing import cast
 
 
-
 class TestBaseClusterRepository(unittest.TestCase):
     def setUp(self) -> None:
         self.entities = [
-            BaseEntity(
-                f'mention{i}', str(i),
-                'source', str(i),
-                None, np.random.rand(10)) for i in range(100)]
-        self.keyed_vectors = gensim.models.KeyedVectors(10)
-        self.keyed_vectors.add_vectors(
-            [entity.mention for entity in self.entities],
-            [np.random.rand(10) for _ in range(100)]
-        )
-        self.keyed_vectors.add_vector(
-            'test',
-            np.random.rand(10)
-        )
+            EntityModel(
+                mention=f'mention{i}', entity_id=f'{i}',
+                entity_source='source', entity_source_id=f'{i}',
+                mention_vector=np.random.rand(10).tolist()
+            ) for i in range(100)]
+        self.model = gensim.models.Word2Vec.load(
+            'data/word2vec.model')
 
         self.entity_repository = BaseEntityRepository(
             entities=self.entities,
-            keyed_vectors=self.keyed_vectors,
+            keyed_vectors=self.model,
             last_id=100
         )
 
         self.clusters = [
-            BaseCluster(
+            ClusterModel(
                 cluster_id=str(i),
                 cluster_name=f'cluster{i}', entities=[])
             for i in range(10)]
@@ -57,7 +46,7 @@ class TestBaseClusterRepository(unittest.TestCase):
         self.assertEqual(self.clusters, clusters)
 
     def test_add_cluster(self):
-        cluster = BaseCluster(
+        cluster = ClusterModel(
             cluster_id='0',
             cluster_name='test',
             entities=[]
@@ -67,7 +56,7 @@ class TestBaseClusterRepository(unittest.TestCase):
 
     def test_add_clusters(self):
         clusters = [
-            BaseCluster(
+            ClusterModel(
                 cluster_id=str(i+10),
                 cluster_name=f'cluster{i+10}',
                 entities=[]
@@ -95,18 +84,18 @@ class TestBaseClusterRepository(unittest.TestCase):
             [entity]
         )
         self.assertEqual(entity.cluster_id, '1')
-        self.assertTrue(entity.in_cluster)
+        self.assertTrue(entity.has_cluster)
 
     def test_remove_entity_from_cluster(self):
         self.cluster_repository.add_entity_to_cluster('1', '1')
-        self.cluster_repository.remove_entity_from_cluster('1', '1')
+        self.cluster_repository.remove_entity_from_cluster('1',)
         self.assertEqual(
             self.cluster_repository.get_cluster_by_id('1').entities,
             []
         )
         entity = self.entity_repository.get_entity_by_id('1')
         self.assertEqual(entity.cluster_id, None)
-        self.assertFalse(entity.in_cluster)
+        self.assertFalse(entity.has_cluster)
 
     def test_to_dict(self):
         for i in range(10):

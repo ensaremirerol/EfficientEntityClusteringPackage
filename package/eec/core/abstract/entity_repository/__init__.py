@@ -1,0 +1,1 @@
+from eec.core.abstract.entity_repository.i_entity_repository import IEntityRepository
