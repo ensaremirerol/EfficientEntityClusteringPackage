@@ -1,5 +1,6 @@
-from eec.implementation.base import *
-from eec.implementation.neo4j import *
+from eec.implementation.base import BaseClusterRepository, BaseEntityRepository, BaseMentionClusteringMethod, BaseUserRepository
+from eec.implementation.neo4j import Neo4JClusterRepository, Neo4JEntityRepository, Neo4JHelper, Neo4JMentionClusteringMethod, Neo4JUserRepository
+from eec.implementation.neo4j.exceptions.neo4j_exceptions import Neo4J_DoNotUseThisException, Neo4J_QueryExecutionException
 from .entity_clusterer_bridge import EntityClustererBridge
-from eec.core.exceptions import *
+from eec.core.exceptions import AlreadyExistsException, NotFoundException, AlreadyInClusterException, ArgumentException
 from eec.core.data_model import UserModel, EntityModel, ClusterModel
