@@ -22,15 +22,12 @@ class UserModel():
 
     def to_dict(self, include_password: bool = False):
         """Returns a dictionary representation of the user object"""
-        data = {
+        return {
             'user_id': self.user_id,
             'username': self.username,
             'role': self.role,
+            'hashed_password': self.hashed_password if include_password else ''
         }
-        if include_password:
-            data['hashed_password'] = self.hashed_password
-
-        return data
 
     @classmethod
     def from_dict(cls, data: dict):

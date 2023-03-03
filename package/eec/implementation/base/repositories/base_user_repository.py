@@ -45,7 +45,7 @@ class BaseUserRepository(IUserRepository):
             raise AlreadyExistsException(
                 f'User with name {username} already exists in repository')
 
-        user = UserModel(username, hashed_password, role)
+        user = UserModel(user_id='', username=username, role=role, hashed_password=hashed_password)
 
         user.user_id = str(self.last_id)
         self.last_id += 1
