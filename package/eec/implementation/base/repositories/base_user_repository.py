@@ -101,10 +101,10 @@ class BaseUserRepository(IUserRepository):
         """Returns the number of users in the repository"""
         return len(self.users)
 
-    def to_dict(self) -> dict:
+    def to_dict(self, include_passwords=False) -> dict:
         """Returns a dictionary representation of the user repository object"""
         return {
-            'users': [user.to_dict() for user in self.users.values()],
+            'users': [user.to_dict(include_password=include_passwords) for user in self.users.values()],
             'last_id': self.last_id
         }
 
@@ -118,7 +118,7 @@ class BaseUserRepository(IUserRepository):
         return cls(users, user_repository_dict['last_id'])
 
     def encode(self) -> dict:
-        return self.to_dict()
+        return self.to_dict(include_passwords=True)
 
     @classmethod
     def decode(cls, user_repository_dict: dict) -> 'BaseUserRepository':

@@ -64,7 +64,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def to_dict(self) -> dict:
+    def to_dict(self, include_passwords=False) -> dict:
         """Returns a dictionary representation of the user repository object"""
         pass
 
