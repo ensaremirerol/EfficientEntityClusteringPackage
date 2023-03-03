@@ -36,5 +36,5 @@ class UserModel():
     def from_dict(cls, data: dict):
         """Returns a user object from a dictionary"""
         return cls(
-            data['user_id'], data['username'], data['role'],
-            data['hashed_password'])
+            user_id=data['user_id'], username=data['username'],
+            role=data['role'], hashed_password=data['hashed_password'])
