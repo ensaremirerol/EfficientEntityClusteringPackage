@@ -1,0 +1,13 @@
+[build-system]
+requires = ['setuptools', 'wheel']
+
+[project]
+name = "FileLockerMiddleware"
+version = "0.0.1"
+description = "Locks files for reading and writing during api calls"
+authors = [{name = "Ensar Emir EROL", email = "ensaremir.erol99@gmail.com"}]
+dependencies = [
+    'numpy',
+    'gensim',
+    'neo4j'
+]
