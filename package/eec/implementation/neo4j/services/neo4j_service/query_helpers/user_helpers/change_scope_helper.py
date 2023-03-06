@@ -25,7 +25,7 @@ class Neo4J_ChangeUserScopeHelper(INeo4JQueryHelper):
             'update_user',
             query=Query('''
                 MATCH (user:User {user_id: $user_id})
-                SET user.scopes = $user_scope
+                SET user.scopes = $user_scopes
                 RETURN user
             ''')
         )
