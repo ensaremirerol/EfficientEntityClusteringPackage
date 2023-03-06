@@ -82,7 +82,7 @@ class Neo4JClusterRepository(IClusterRepository):
         self.calculate_cluster_vector(cluster_id=cluster.cluster_id)
         return cast(EntityModel, result['entity'])
 
-    def remove_entities_from_clusters(
+    def remove_entities_from_cluster(
             self,
             entity_ids: list[str]) -> list[EntityModel]:
         '''Removes the entities with the given entity ids from the cluster with the given cluster id.'''
