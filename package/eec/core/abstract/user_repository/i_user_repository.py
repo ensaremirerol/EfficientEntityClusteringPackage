@@ -34,7 +34,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def add_user(self, username: str, hashed_password: str, role: str) -> UserModel:
+    def add_user(self, username: str, hashed_password: str, scopes: list[str]) -> UserModel:
         """Adds a user object to the repository"""
         pass
 
@@ -44,7 +44,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def change_role(self, user_id: str, role: str) -> UserModel:
+    def change_role(self, user_id: str, scopes: list[str]) -> UserModel:
         """Updates a user object in the repository"""
         pass
 

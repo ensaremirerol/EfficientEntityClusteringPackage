@@ -25,7 +25,7 @@ class Neo4J_CreateUserHelper(INeo4JQueryHelper):
                 CREATE (user:User {
                     user_id: apoc.create.uuid(),
                     username: $username,
-                    role: $role,
+                    scopes: $scopes,
                     hashed_password: $hashed_password
                 })
                 RETURN user
@@ -36,7 +36,7 @@ class Neo4J_CreateUserHelper(INeo4JQueryHelper):
     def get_arguments(self) -> dict:
         return {
             'username': self.user.username,
-            'role': self.user.role,
+            'scopes': self.user.scopes,
             'hashed_password': self.user.hashed_password
         }
 

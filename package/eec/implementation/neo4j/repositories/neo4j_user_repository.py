@@ -47,13 +47,13 @@ class Neo4JUserRepository(IUserRepository):
         result = self.neo4j_helper.run_query(Neo4J_GetAllUsersHelper())
         return cast(list[UserModel], result['users'])
 
-    def add_user(self, username: str, hashed_password: str, role: str='') -> UserModel:
+    def add_user(self, username: str, hashed_password: str, scopes: list[str] = []) -> UserModel:
         """Adds a user object to the repository"""
         if self.username_exists(username):
             raise AlreadyExistsException(
                 f'User with name {username} already exists in repository')
         user = UserModel(user_id='', username=username,
-                         hashed_password=hashed_password, role=role)
+                         hashed_password=hashed_password, scopes=scopes)
         result = self.neo4j_helper.run_query(
             Neo4J_CreateUserHelper(user))
 
@@ -77,13 +77,13 @@ class Neo4JUserRepository(IUserRepository):
             raise Exception('Failed to update user')
         return cast(UserModel, result['user'])
     
-    def change_role(self, user_id: str, role: str) -> UserModel:
+    def change_role(self, user_id: str, scopes: list[str] = []) -> UserModel:
         if not self.user_exists(user_id):
             raise NotFoundException(
                 f'User with id {user_id} not found in repository')
 
         result = self.neo4j_helper.run_query(
-            Neo4J_ChangeUserRoleHelper(user_id, role))
+            Neo4J_ChangeUserRoleHelper(user_id, scopes))
 
         if result['user'] is None:
             raise Exception('Failed to update user')

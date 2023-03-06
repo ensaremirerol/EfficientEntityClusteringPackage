@@ -39,13 +39,14 @@ class BaseUserRepository(IUserRepository):
         """Returns a list of all user objects"""
         return list(self.users.values())
 
-    def add_user(self, username: str, hashed_password: str, role: str = ''):
+    def add_user(self, username: str, hashed_password: str, scopes: list[str] = []):
         """Adds a user object to the repository"""
         if self.username_exists(username):
             raise AlreadyExistsException(
                 f'User with name {username} already exists in repository')
 
-        user = UserModel(user_id='', username=username, role=role, hashed_password=hashed_password)
+        user = UserModel(user_id='', username=username, scopes=scopes,
+                         hashed_password=hashed_password)
 
         user.user_id = str(self.last_id)
         self.last_id += 1
@@ -72,11 +73,11 @@ class BaseUserRepository(IUserRepository):
 
         return self.users[user_id]
 
-    def change_role(self, user_id: str, role: str) -> UserModel:
+    def change_role(self, user_id: str, scopes: list[str] = []) -> UserModel:
         if not self.user_exists(user_id):
             raise NotFoundException(
                 f'User with id {user_id} not found in repository')
-        self.users[user_id].role = role
+        self.users[user_id].scopes = scopes
         return self.users[user_id]
 
     def change_password(self, user_id: str, hashed_password: str) -> UserModel:

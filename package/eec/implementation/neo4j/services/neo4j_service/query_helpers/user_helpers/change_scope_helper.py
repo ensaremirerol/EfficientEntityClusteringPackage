@@ -5,14 +5,14 @@ from eec.core.data_model import UserModel
 from typing import Optional
 
 
-class Neo4J_ChangeUserRoleHelper(INeo4JQueryHelper):
+class Neo4J_ChangeUserScopeHelper(INeo4JQueryHelper):
     """
-    Updates a user's role.
+    Updates a user's scope.
     Returns None if no user is found.
 
     params:
         user_id: str
-        user_role: str
+        user_scopes: list[str]
 
     returns:
         {
@@ -20,22 +20,22 @@ class Neo4J_ChangeUserRoleHelper(INeo4JQueryHelper):
         }
     """
 
-    def __init__(self, user_id: str, user_role: str):
+    def __init__(self, user_id: str, user_scope: list[str]):
         super().__init__(
             'update_user',
             query=Query('''
                 MATCH (user:User {user_id: $user_id})
-                SET user.user_role = $user_role
+                SET user.scopes = $user_scope
                 RETURN user
             ''')
         )
         self.user_id = user_id
-        self.user_role = user_role
+        self.user_scope = user_scope
 
     def get_arguments(self) -> dict:
         return {
             'user_id': self.user_id,
-            'user_role': self.user_role
+            'user_scopes': self.user_scope
         }
 
     def consume(self, result: list[Record]) -> dict:
