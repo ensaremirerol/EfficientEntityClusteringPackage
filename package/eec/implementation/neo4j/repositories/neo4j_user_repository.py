@@ -77,13 +77,13 @@ class Neo4JUserRepository(IUserRepository):
             raise Exception('Failed to update user')
         return cast(UserModel, result['user'])
     
-    def change_role(self, user_id: str, scopes: list[str] = []) -> UserModel:
+    def change_scopes(self, user_id: str, scopes: list[str] = []) -> UserModel:
         if not self.user_exists(user_id):
             raise NotFoundException(
                 f'User with id {user_id} not found in repository')
 
         result = self.neo4j_helper.run_query(
-            Neo4J_ChangeUserRoleHelper(user_id, scopes))
+            Neo4J_ChangeUserScopeHelper(user_id, scopes))
 
         if result['user'] is None:
             raise Exception('Failed to update user')

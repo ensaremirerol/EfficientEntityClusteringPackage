@@ -73,7 +73,7 @@ class BaseUserRepository(IUserRepository):
 
         return self.users[user_id]
 
-    def change_role(self, user_id: str, scopes: list[str] = []) -> UserModel:
+    def change_scopes(self, user_id: str, scopes: list[str] = []) -> UserModel:
         if not self.user_exists(user_id):
             raise NotFoundException(
                 f'User with id {user_id} not found in repository')
